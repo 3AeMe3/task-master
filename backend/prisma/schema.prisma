@@ -13,16 +13,81 @@ datasource db {
 }
 
 enum STATUS {
-  COMPLETED
-  PENDING
-  OVERDUE
+  COMPLETADO
+  PENDIENTE
+  VENCIDO
+}
+
+enum PRIORITY {
+  BAJO
+  NORMAL
+  URGENTE
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  name          String
+  email         String    @unique
+  projects      Project[]
+  assignedTasks Task[]    @relation("AssignedTasks")
+  createdTasks  Task[]    @relation("CreatedTasks")
+}
+
+model Project {
+  id     Int    @id @default(autoincrement())
+  name   String
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+  tasks  Task[]
+
+  @@unique([name, userId])
 }
 
 model Task {
   id          Int      @id @default(autoincrement())
   title       String
   description String?
-  status      STATUS   @default(PENDING)
+  priority    PRIORITY @default(NORMAL)
+  status      STATUS   @default(PENDIENTE)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  createdById Int
+  createdBy   User     @relation("CreatedTasks", fields: [createdById], references: [id])
+
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id])
+
+  assigneeId Int?
+  assignee   User? @relation("AssignedTasks", fields: [assigneeId], references: [id])
+
+  taskTags TaskTag[]
+
+  subTasks SubTask[]
+}
+
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  tasks TaskTag[]
+}
+
+model SubTask {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  completed   Boolean @default(false)
+
+  taskId Int
+  task   Task @relation(fields: [taskId], references: [id])
+}
+
+model TaskTag {
+  taskId Int
+  tagId  Int
+
+  task Task @relation(fields: [taskId], references: [id])
+  tag  Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([taskId, tagId])
 }
