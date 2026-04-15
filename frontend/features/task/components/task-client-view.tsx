@@ -7,34 +7,71 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
-import TasksList from "./tasks-list";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
-  CircleCheck,
   Clock,
   Edit,
   MessageSquare,
   Tag,
-  Trash,
   UserCircle,
   UserRound,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import CompleteTaskButton from "../complete-task-button";
+import DeleteTaskButton from "../delete-task-button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { TaskClientViewProps } from "../types/task-client-view.types";
+import Link from "next/link";
+import { Task } from "@/types/task";
+import TaskFilter from "./task-filter";
 
-export default function TaskClientView({ taskData }) {
-  const [selectedTask, setSelectedTask] = useState(false);
+export default function TaskClientView({
+  taskData,
+  title,
+}: TaskClientViewProps) {
+  const [selectedTask, setSelectedTask] = useState<Task | null>();
+
   return (
     <>
-      <TasksList tasks={taskData} onHandleClick={setSelectedTask} />
-
-      <Sheet open={selectedTask} onOpenChange={setSelectedTask}>
-        <SheetContent className="gap-0 ">
-          <SheetHeader className="bg-white border-b border-gray-200 ">
+      <ScrollArea className="flex flex-col gap-4  w-full h-full p-4 border rounded-xl ">
+        <div className="flex justify-between px-2">
+          {title ? (
+            <div className="w-full">
+              <div className="flex justify-between">
+                <span className="font-semibold">{title}</span>
+                <Link className="font-semibold" href={"/tasks"}>
+                  View All
+                </Link>
+              </div>
+              <div>
+                <TaskFilter
+                  taskData={taskData}
+                  onSelectedTask={setSelectedTask}
+                />
+              </div>
+            </div>
+          ) : (
+            <TaskFilter
+              taskData={taskData}
+              onSelectedTask={setSelectedTask}
+              showFilter
+            />
+          )}
+        </div>
+      </ScrollArea>
+      <Sheet
+        open={!!selectedTask}
+        onOpenChange={(open) => {
+          if (!open) setSelectedTask(null);
+        }}
+      >
+        <SheetContent className="gap-0  ">
+          <SheetHeader className=" border-b border-gray-200 ">
             <div className=" flex flex-col gap-3 py-2 ">
               <SheetTitle className="text-2xl font-semibold">
                 {selectedTask?.title}
@@ -54,17 +91,16 @@ export default function TaskClientView({ taskData }) {
           </SheetHeader>
           <div className="px-4 bg-[#fafbfc] border pt-5 h-full">
             <div className=" flex gap-3 mt-3 ">
-              <Button className="flex-1 text-white bg-gradient-to-r from-violet-400 to-indigo-500">
+              <Button className="flex-1 text-white bg-linear-to-r from-violet-400 to-indigo-500">
                 <Edit />
                 Editar
               </Button>
-              <Button className="flex-1" variant={"outline"}>
-                <CircleCheck />
-                Completar
-              </Button>
-              <Button variant={"outline"}>
-                <Trash />
-              </Button>
+              {selectedTask && (
+                <>
+                  <CompleteTaskButton id={selectedTask.id} />
+                  <DeleteTaskButton id={selectedTask.id} />
+                </>
+              )}
             </div>
             <div className="py-6  border-b border-gray-300">
               <span className="font-semibold text-lg ">Descripción</span>
@@ -146,7 +182,7 @@ export default function TaskClientView({ taskData }) {
               <div className="flex gap-2 ">
                 <UserRound />
                 <Textarea placeholder="Añade un comentario..." />
-                <Button className="flex-1 text-white bg-gradient-to-r from-violet-400 to-indigo-500">
+                <Button className="flex-1 text-white bg-linear-to-r from-violet-400 to-indigo-500">
                   Enviar
                 </Button>
               </div>

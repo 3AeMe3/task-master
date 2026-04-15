@@ -7,7 +7,8 @@ import { formSchema } from "@/schema/form-schema";
 
 export async function createTask(data: z.infer<typeof formSchema>) {
   try {
-    const response = await fetch("http://localhost:4000/tasks", {
+    console.log("createdTask payload:", JSON.stringify(data));
+    const response = await fetch("http://localhost:4000/task", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,13 +22,14 @@ export async function createTask(data: z.infer<typeof formSchema>) {
     const result = await response.json();
 
     console.log("Respuesta del backend", result);
-    revalidatePath("/tasks");
+    revalidatePath("/task");
 
     redirect("/");
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
+    return {
+      succes: false,
+      error: err.message || "Error desconocido al crear la tarea",
+    };
   }
-  return {
-    success: true,
-  };
 }

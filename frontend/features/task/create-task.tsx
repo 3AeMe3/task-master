@@ -11,7 +11,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -20,6 +19,14 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function CreateTask() {
   const [open, setOpen] = useState(false);
@@ -36,6 +43,9 @@ export default function CreateTask() {
       title: "",
       description: "",
       createdAt: "",
+      status: "PENDIENTE",
+      priority: "NORMAL",
+      projectId: 1,
     },
   });
 
@@ -56,20 +66,16 @@ export default function CreateTask() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="text-white cursor-pointer bg-gradient-to-r from-violet-400 to-indigo-500">
+        <Button className="text-white cursor-pointer bg-linear-to-r from-violet-400 to-indigo-500">
           + Crear Tarea
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <form onSubmit={handleSubmit(onValidSubmit)}>
           <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when you&apos;re
-              done.
-            </DialogDescription>
+            <DialogTitle>Crear Nueva Tarea</DialogTitle>
           </DialogHeader>
-          <FieldGroup>
+          <FieldGroup className="my-5">
             <Field>
               <Label htmlFor="title">Titulo</Label>
               <Input {...register("title")} />
@@ -85,6 +91,55 @@ export default function CreateTask() {
               <Label htmlFor="createdAt">Fecha</Label>
               <Input type="date" {...register("createdAt")} />
               {errors.createdAt && <p>{errors.createdAt.message}</p>}
+            </Field>
+            <Field className="flex-row">
+              <div>
+                <Label className="mb-2">Prioridad</Label>
+                <Select defaultValue="NORMAL" {...register("priority")}>
+                  <SelectTrigger className="w-full max-w-48">
+                    <SelectValue placeholder="Selecciona la prioridad" />
+                  </SelectTrigger>
+                  <SelectGroup>
+                    <SelectContent position="item-aligned">
+                      <SelectItem value="BAJO">Bajo</SelectItem>
+                      <SelectItem value="NORMAL">Normal</SelectItem>
+                      <SelectItem value="URGENTE">Urgente</SelectItem>
+                    </SelectContent>
+                  </SelectGroup>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="mb-2">Status</Label>
+
+                <Select defaultValue="PENDIENTE" {...register("status")}>
+                  <SelectTrigger className="w-full max-w-48">
+                    <SelectValue placeholder="Selecciona la prioridad" />
+                  </SelectTrigger>
+                  <SelectGroup>
+                    <SelectContent position="item-aligned">
+                      <SelectItem value="PENDIENTE">Pendiente</SelectItem>
+                      <SelectItem value="COMPLETADO">Completado</SelectItem>
+                      <SelectItem value="VENCIDO">Vencido</SelectItem>
+                    </SelectContent>
+                  </SelectGroup>
+                </Select>
+              </div>
+            </Field>
+            <Field className="flex-row">
+              <div>
+                <Label className="mb-2">Projects</Label>
+                <Select defaultValue="1" {...register("projectId")}>
+                  <SelectTrigger className="w-full max-w-48">
+                    <SelectValue placeholder="Selecciona la prioridad" />
+                  </SelectTrigger>
+                  <SelectGroup>
+                    <SelectContent position="item-aligned">
+                      <SelectItem value="1">Default</SelectItem>
+                    </SelectContent>
+                  </SelectGroup>
+                </Select>
+              </div>
             </Field>
           </FieldGroup>
           {serverError && <p>{serverError}</p>}
