@@ -5,9 +5,13 @@ import * as z from "zod";
 const Task = z.object({
   title: z.string(),
   description: z.string(),
+  status: z.enum(["PENDIENTE", "COMPLETADO", "VENCIDO"]).optional(),
+  priority: z.enum(["BAJO", "NORMAL", "URGENTE"]).optional(),
+  projectId: z.number(),
+  assigneeId: z.number().optional(),
 });
 
-export const getTasks = async (req: Request, res: Response) => {
+export const getTasks = async (_: Request, res: Response) => {
   try {
     const tasks = await prisma.task.findMany();
     res.status(200).json(tasks);
@@ -19,7 +23,7 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response) => {
   try {
-    const body = await req.body;
+    const body = req.body;
 
     const dataResult = Task.safeParse(body);
     if (!dataResult.success) {
@@ -29,11 +33,13 @@ export const createTask = async (req: Request, res: Response) => {
       });
     }
     const newTask = await prisma.task.create({
-      data: dataResult.data,
+      data: { ...dataResult.data, createdById: 1 },
     });
     res.status(201).json(newTask);
   } catch (err) {
-    return res.status(500).json({ message: "Error al crear la tarea" });
+    return res
+      .status(500)
+      .json({ message: "Error al crear la tarea", error: err });
   }
 };
 
@@ -72,7 +78,7 @@ export const completeTask = async (req: Request, res: Response) => {
 
     const updatedTask = await prisma.task.update({
       where: { id },
-      data: { status: "COMPLETED" },
+      data: { status: "COMPLETADO" },
     });
 
     res.status(200).json(updatedTask);
