@@ -3,7 +3,6 @@
 import Link from "next/link";
 
 import {
-  CircleCheck,
   CircleCheckBig,
   FolderKanban,
   Kanban,
@@ -54,17 +53,11 @@ export default function AppSideBar() {
           </Link>
           <Link
             href={"/projects"}
-            className={`flex items-center gap-3 text-gray-600 w-full p-3 rounded-xl font-semibold   ${pathName === "/projects" ? " text-white bg-gradient-to-r from-violet-400 to-indigo-500 " : ""}`}
+            className={`flex items-center gap-3 text-gray-600 w-full p-3 rounded-xl font-semibold   ${pathName === "/projects" ? " text-white bg-linear-to-r from-violet-400 to-indigo-500 " : ""}`}
           >
             <FolderKanban />
             <span>Projects</span>
           </Link>
-        </GroupContent>
-
-        <GroupContent label="PROJECTS">
-          <button>sidebar</button>
-          <button>sidebar</button>
-          <button>sidebar</button>
         </GroupContent>
       </SidebarContent>
       <SidebarFooter>
