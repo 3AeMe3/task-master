@@ -6,4 +6,10 @@ export const formSchema = z.object({
     .string()
     .min(1, "La description debe de tener por lo menos una letra"),
   createdAt: z.iso.date({ error: "La fecha es obligatoria" }),
+  status: z.enum(["PENDIENTE", "COMPLETADO", "VENCIDO"]),
+  priority: z.enum(["BAJO", "NORMAL", "URGENTE"]),
+  projectId: z
+    .number()
+    .int()
+    .positive({ error: "El proyecto debe de ser un ID válido" }),
 });
