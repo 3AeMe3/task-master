@@ -11,13 +11,15 @@ import {
 import { Task } from "@/types/task";
 import GetTask from "@/lib/api/getTasks";
 import { getStatus, calcPercentage } from "@/lib/utils/formater";
+
 import TaskClientView from "@/features/task/components/task-client-view";
 export default async function Home() {
   const tasks: Task[] = await GetTask();
 
-  const tasksPending = getStatus(tasks, "pending");
-  const tasksCompleted = getStatus(tasks, "completed");
-  const percentage = calcPercentage(tasksCompleted.length, tasks.length);
+  const completed = getStatus(tasks, "COMPLETED");
+  const overdue = getStatus(tasks, "OVERDUE");
+  const percentage = calcPercentage(completed.length, tasks.length);
+
   return (
     <div className="p-10 grid gap-5 auto-rows-min grid-flow-row min-h-screen">
       <div className="flex justify-between items-center h-30">
@@ -50,7 +52,7 @@ export default async function Home() {
             </span>
           </CardHeader>
           <CardContent className="text-3xl font-semibold">
-            {tasksCompleted.length}
+            {completed.length}
           </CardContent>
           <CardFooter className="text-black/40 font-semibold">
             Completed
@@ -63,7 +65,7 @@ export default async function Home() {
             </span>
           </CardHeader>
           <CardContent className="text-3xl font-semibold">
-            falta vendio o atrasado
+            {overdue.length}
           </CardContent>
           <CardFooter className="text-black/40 font-semibold">
             Vencido o atrasado
@@ -83,8 +85,8 @@ export default async function Home() {
           </CardFooter>
         </Card>
       </div>
-      <div className=" h-100 flex justify-between items-center gap-3  ">
-        <TaskClientView taskData={tasks} />
+      <div className=" h-100 flex justify-between items-center gap-3">
+        <TaskClientView taskData={tasks} title="Tareas de Hoy" />
         <TaskSummary />
       </div>
 
