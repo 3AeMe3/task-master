@@ -8,7 +8,6 @@ type CompleteTaskProps = {
 };
 
 export default function CompleteTaskButton({ id }: CompleteTaskProps) {
-  console.log(id, "este es el id que se marcara como complteado");
   return (
     <Button
       type="button"

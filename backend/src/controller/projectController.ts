@@ -3,7 +3,13 @@ import { prisma } from "../lib/prisma";
 
 export const postProject = async (req: Request, res: Response) => {
   const { name } = req.body;
-  const userId = 1;
+
+  const userId = req.user?.userId;
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ message: "No autorizado, no se encontro el userId" });
+  }
 
   if (!name) {
     return res
@@ -29,7 +35,6 @@ export const postProject = async (req: Request, res: Response) => {
     res
       .status(201)
       .json({ message: "se creo el proyecto correctamente", data: project });
-    console.log(": xd");
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Error al crear el project" });
@@ -38,10 +43,19 @@ export const postProject = async (req: Request, res: Response) => {
 
 export const getProjects = async (req: Request, res: Response) => {
   try {
-    const projects = await prisma.project.findMany();
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ message: "No autorizado, no se encontro el userId" });
+    }
+
+    const projects = await prisma.project.findMany({
+      where: { userId: userId },
+    });
     res.status(200).json(projects);
   } catch (err) {
-    (console.log(err),
-      res.status(500).json({ message: "Fallo en obtener los projectos" }));
+    console.log(err);
+    res.status(500).json({ message: "Fallo en obtener los projectos" });
   }
 };

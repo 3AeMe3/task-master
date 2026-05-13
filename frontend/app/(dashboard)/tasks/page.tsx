@@ -6,7 +6,7 @@ import { Task } from "@/types/task";
 export default async function AllTasks() {
   const tasks: Task[] = await GetTask();
   return (
-    <main className="p-10  min-h-screen">
+    <main className="px-10 min-h-screen flex flex-col">
       <div className="flex justify-between items-center h-30 mb-10">
         <div>
           <h1 className="font-semibold text-2xl">AllTasks</h1>
@@ -14,7 +14,7 @@ export default async function AllTasks() {
         </div>
         <CreateTask />
       </div>
-      <div className=" min-h-screen  flex justify-between gap-3">
+      <div className=" rounded-lg shadow p-5 flex-1">
         <TaskClientView taskData={tasks} />
       </div>
     </main>

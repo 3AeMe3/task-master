@@ -1,35 +1,36 @@
 "use server";
-
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
-import { formSchema } from "@/schema/form-schema";
+import { taskSchema } from "@/schema/form-schema";
+import { cookies } from "next/headers";
 
-export async function createTask(data: z.infer<typeof formSchema>) {
+export async function createTask(data: z.infer<typeof taskSchema>) {
   try {
-    console.log("createdTask payload:", JSON.stringify(data));
+    const cookieStore = await cookies();
+    const token = cookieStore.get("access_token")?.value;
+
     const response = await fetch("http://localhost:4000/task", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Cookie: `access_token=${token}`,
       },
       body: JSON.stringify(data),
     });
+
     if (!response.ok) {
-      throw new Error("error al guardar los datos");
+      const error = await response.text();
+      throw new Error(error || "Error creando tarea");
     }
 
     const result = await response.json();
 
-    console.log("Respuesta del backend", result);
     revalidatePath("/task");
 
-    redirect("/");
+    return result;
   } catch (err) {
-    console.error(err);
-    return {
-      succes: false,
-      error: err.message || "Error desconocido al crear la tarea",
-    };
+    console.log(err);
+    return err instanceof Error ? err.message : "Error del server";
   }
 }

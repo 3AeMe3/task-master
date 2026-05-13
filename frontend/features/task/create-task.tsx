@@ -1,10 +1,17 @@
 "use client";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formSchema } from "@/schema/form-schema";
-import { createTask } from "./handle-create";
+import { taskSchema } from "@/schema/form-schema";
+
+type Project = { id: number; name: string };
+import type { TaskFormValues } from "@/lib/forms/task-form";
+
+import useUserData from "@/hooks/use-user-data";
+import useProject from "@/hooks/use-project";
+import { useCreateTask } from "@/hooks/use-create-task";
+import { defaultTaskValues } from "@/lib/forms/task-form";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldGroup } from "@/components/ui/field";
+import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -30,39 +37,37 @@ import {
 
 export default function CreateTask() {
   const [open, setOpen] = useState(false);
-  const [serverError, setServerError] = useState("");
-
+  const { data: userData } = useUserData();
+  const { data: projectData } = useProject();
+  const { submit } = useCreateTask();
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      createdAt: "",
-      status: "PENDIENTE",
-      priority: "NORMAL",
-      projectId: 1,
-    },
+  } = useForm<TaskFormValues>({
+    resolver: zodResolver(taskSchema),
+    defaultValues: defaultTaskValues,
   });
 
-  const onValidSubmit = async (data: z.infer<typeof formSchema>) => {
-    try {
-      setServerError("");
-      const result = await createTask(data);
-      if (result?.success) {
-        reset();
+  useEffect(() => {
+    if (userData?.id) {
+      reset((prev) => ({
+        ...prev,
+        projectId: userData.id,
+      }));
+    }
+  }, [userData, reset]);
 
-        setOpen(false);
-      }
-    } catch (err) {
-      setServerError("no se pudo crear la tarea");
-      console.error(err);
+  const onValidSubmit = async (data: TaskFormValues) => {
+    const ok = await submit(data);
+    if (ok) {
+      reset();
+      setOpen(false);
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -70,79 +75,112 @@ export default function CreateTask() {
           + Crear Tarea
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="sm:max-w-sm text-black">
         <form onSubmit={handleSubmit(onValidSubmit)}>
           <DialogHeader>
-            <DialogTitle>Crear Nueva Tarea</DialogTitle>
+            <DialogTitle>Nueva Tarea</DialogTitle>
           </DialogHeader>
           <FieldGroup className="my-5">
             <Field>
-              <Label htmlFor="title">Titulo</Label>
+              <Label htmlFor="title">Título</Label>
               <Input {...register("title")} />
               {errors.title && <p>{errors.title.message}</p>}
             </Field>
             <Field>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Descripción</Label>
               <Input {...register("description")} />
 
               {errors.description && <p>{errors.description.message}</p>}
             </Field>
             <Field>
-              <Label htmlFor="createdAt">Fecha</Label>
-              <Input type="date" {...register("createdAt")} />
-              {errors.createdAt && <p>{errors.createdAt.message}</p>}
+              <Label htmlFor="dueDate">Fecha de Vencimiento</Label>
+              <Input type="date" {...register("dueDate")} />
+              {errors.dueDate && <p>{errors.dueDate.message}</p>}
             </Field>
             <Field className="flex-row">
               <div>
                 <Label className="mb-2">Prioridad</Label>
-                <Select defaultValue="NORMAL" {...register("priority")}>
-                  <SelectTrigger className="w-full max-w-48">
-                    <SelectValue placeholder="Selecciona la prioridad" />
-                  </SelectTrigger>
-                  <SelectGroup>
-                    <SelectContent position="item-aligned">
-                      <SelectItem value="BAJO">Bajo</SelectItem>
-                      <SelectItem value="NORMAL">Normal</SelectItem>
-                      <SelectItem value="URGENTE">Urgente</SelectItem>
-                    </SelectContent>
-                  </SelectGroup>
-                </Select>
+                <Controller
+                  name="priority"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value?.toString()}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger className="w-full max-w-48">
+                        <SelectValue placeholder="Selecciona la prioridad" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="BAJO">Bajo</SelectItem>
+                        <SelectItem value="NORMAL">Normal</SelectItem>
+                        <SelectItem value="URGENTE">Urgente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
 
               <div>
                 <Label className="mb-2">Status</Label>
 
-                <Select defaultValue="PENDIENTE" {...register("status")}>
-                  <SelectTrigger className="w-full max-w-48">
-                    <SelectValue placeholder="Selecciona la prioridad" />
-                  </SelectTrigger>
-                  <SelectGroup>
-                    <SelectContent position="item-aligned">
-                      <SelectItem value="PENDIENTE">Pendiente</SelectItem>
-                      <SelectItem value="COMPLETADO">Completado</SelectItem>
-                      <SelectItem value="VENCIDO">Vencido</SelectItem>
-                    </SelectContent>
-                  </SelectGroup>
-                </Select>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value ? String(field.value) : undefined}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger className="w-full max-w-48">
+                        <SelectValue placeholder="Selecciona la prioridad" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PENDIENTE">Pendiente</SelectItem>
+                        <SelectItem value="COMPLETADO">Completado</SelectItem>
+                        <SelectItem value="VENCIDO">Vencido</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
             </Field>
             <Field className="flex-row">
               <div>
                 <Label className="mb-2">Projects</Label>
-                <Select defaultValue="1" {...register("projectId")}>
-                  <SelectTrigger className="w-full max-w-48">
-                    <SelectValue placeholder="Selecciona la prioridad" />
-                  </SelectTrigger>
-                  <SelectGroup>
-                    <SelectContent position="item-aligned">
-                      <SelectItem value="1">Default</SelectItem>
-                    </SelectContent>
-                  </SelectGroup>
-                </Select>
+                <Controller
+                  name="projectId"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Select
+                      value={field.value ? String(field.value) : undefined}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                    >
+                      <SelectTrigger className="w-full max-w-48">
+                        <SelectValue placeholder="Seleccion el proyecto" />
+                      </SelectTrigger>
+                      <SelectGroup>
+                        <SelectContent position="item-aligned">
+                          {Array.isArray(projectData) &&
+                            projectData.map((project: Project) => (
+                              <SelectItem
+                                key={project.id}
+                                value={String(project.id)}
+                              >
+                                {project.name}
+                              </SelectItem>
+                            ))}
+                          {fieldState.error && (
+                            <FieldError errors={[fieldState.error]} />
+                          )}
+                        </SelectContent>
+                      </SelectGroup>
+                    </Select>
+                  )}
+                />
               </div>
             </Field>
           </FieldGroup>
-          {serverError && <p>{serverError}</p>}
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>

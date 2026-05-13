@@ -5,18 +5,22 @@ import {
   findTask,
   completeTask,
   deleteTask,
+  editTask,
 } from "../controller/taskController";
+import { verifyToken } from "../middlewares/authMiddleware";
 
 const router = Router();
 
-router.get("/task", getTasks);
+router.get("/task", verifyToken, getTasks);
 
-router.post("/task", createTask);
+router.post("/task", verifyToken, createTask);
 
-router.get("/task/:id", findTask);
+router.get("/task/:id", verifyToken, findTask);
 
-router.patch("/task/:id", completeTask);
+router.patch("/task/:id", verifyToken, completeTask);
 //
-router.delete("/task/:id", deleteTask);
+router.delete("/task/:id", verifyToken, deleteTask);
+
+router.patch("/edit-task/:id", verifyToken, editTask);
 
 export default router;

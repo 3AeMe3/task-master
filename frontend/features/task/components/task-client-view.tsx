@@ -1,4 +1,14 @@
 "use client";
+
+import { useState } from "react";
+
+import { Task } from "@/types/task";
+import { TaskClientViewProps } from "../types/task-client-view.types";
+
+import CompleteTaskButton from "../complete-task-button";
+import DeleteTaskButton from "../delete-task-button";
+import EditTaskButton from "../edit-task-button";
+
 import {
   Sheet,
   SheetContent,
@@ -7,7 +17,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,19 +25,12 @@ import {
   Edit,
   MessageSquare,
   Tag,
-  UserCircle,
   UserRound,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import CompleteTaskButton from "../complete-task-button";
-import DeleteTaskButton from "../delete-task-button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { TaskClientViewProps } from "../types/task-client-view.types";
-import Link from "next/link";
-import { Task } from "@/types/task";
-import TaskFilter from "./task-filter";
+import TaskList from "./task-list";
 
 export default function TaskClientView({
   taskData,
@@ -38,39 +40,18 @@ export default function TaskClientView({
 
   return (
     <>
-      <ScrollArea className="flex flex-col gap-4  w-full h-full p-4 border rounded-xl ">
-        <div className="flex justify-between px-2">
-          {title ? (
-            <div className="w-full">
-              <div className="flex justify-between">
-                <span className="font-semibold">{title}</span>
-                <Link className="font-semibold" href={"/tasks"}>
-                  View All
-                </Link>
-              </div>
-              <div>
-                <TaskFilter
-                  taskData={taskData}
-                  onSelectedTask={setSelectedTask}
-                />
-              </div>
-            </div>
-          ) : (
-            <TaskFilter
-              taskData={taskData}
-              onSelectedTask={setSelectedTask}
-              showFilter
-            />
-          )}
-        </div>
-      </ScrollArea>
+      <TaskList
+        title={title}
+        taskData={taskData}
+        setSelectedTask={setSelectedTask}
+      />
       <Sheet
         open={!!selectedTask}
         onOpenChange={(open) => {
           if (!open) setSelectedTask(null);
         }}
       >
-        <SheetContent className="gap-0  ">
+        <SheetContent className="gap-0">
           <SheetHeader className=" border-b border-gray-200 ">
             <div className=" flex flex-col gap-3 py-2 ">
               <SheetTitle className="text-2xl font-semibold">
@@ -91,12 +72,9 @@ export default function TaskClientView({
           </SheetHeader>
           <div className="px-4 bg-[#fafbfc] border pt-5 h-full">
             <div className=" flex gap-3 mt-3 ">
-              <Button className="flex-1 text-white bg-linear-to-r from-violet-400 to-indigo-500">
-                <Edit />
-                Editar
-              </Button>
               {selectedTask && (
                 <>
+                  <EditTaskButton id={selectedTask.id} />
                   <CompleteTaskButton id={selectedTask.id} />
                   <DeleteTaskButton id={selectedTask.id} />
                 </>
@@ -109,44 +87,41 @@ export default function TaskClientView({
               </SheetDescription>
             </div>
             <div className=" grid grid-cols-2  gap-y-5 py-5 border-b border-gray-300 ">
-              <div className="flex flex-col justify-center ">
-                <Badge variant={"ghost"} className="text-gray-500">
-                  <UserRound /> Assignee
+              <div className="flex flex-col justify-center  ">
+                <Badge variant={"ghost"} className="text-gray-500 px-0">
+                  <UserRound /> Asignado a
                 </Badge>
                 <div className="flex gap-2">
                   <UserRound />
-                  <span className="font-semibold text-sm">Frank Mendoza</span>
+                  <span className=" text-sm">Marcus Johnson</span>
+                </div>
+              </div>
+              <div className="flex flex-col justify-center  ">
+                <Badge variant={"ghost"} className="text-gray-500  px-0">
+                  <Calendar /> Fecha Final
+                </Badge>
+                <div className="flex gap-2">
+                  <span className=" text-sm">March 24</span>
                 </div>
               </div>
               <div className="flex flex-col justify-center ">
-                <Badge variant={"ghost"} className="text-gray-500">
-                  <Calendar /> Assignee
+                <Badge variant={"ghost"} className="text-gray-500 px-0">
+                  <Tag /> Proyecto
                 </Badge>
                 <div className="flex gap-2">
-                  <UserCircle />
-                  <span className="font-semibold text-sm">Frank Mendoza</span>
+                  <span className=" text-sm">Proyecto Name</span>
                 </div>
               </div>
               <div className="flex flex-col justify-center ">
-                <Badge variant={"ghost"} className="text-gray-500">
-                  <Tag /> Assignee
+                <Badge variant={"ghost"} className="text-gray-500 px-0">
+                  <Clock /> Creado
                 </Badge>
                 <div className="flex gap-2">
-                  <UserCircle />
-                  <span className="font-semibold text-sm">Frank Mendoza</span>
-                </div>
-              </div>
-              <div className="flex flex-col justify-center ">
-                <Badge variant={"ghost"} className="text-gray-500">
-                  <Clock /> Assignee
-                </Badge>
-                <div className="flex gap-2">
-                  <UserCircle />
-                  <span className="font-semibold text-sm">Frank Mendoza</span>
+                  <span className=" text-sm">Mar 15</span>
                 </div>
               </div>
               <div className="col-span-2 flex  flex-col gap-3 ">
-                <span className="font-semibold text-lg ">Tags</span>
+                <span className=" text-lg font-semibold ">Tags</span>
                 <div className="flex w-full  gap-2 flex-wrap">
                   <Badge className="bg-gray-200 px-3 " variant={"outline"}>
                     Backend
@@ -155,7 +130,7 @@ export default function TaskClientView({
               </div>
             </div>
             <div className="py-5 flex flex-col gap-3 border-b border-gray-200">
-              <span className="font-medium text-lg">Progreso</span>
+              <span className="text-lg font-semibold">Progreso</span>
               <Progress value={90} />
               <div>
                 <span>SubTasks</span>
@@ -177,7 +152,7 @@ export default function TaskClientView({
             <div className="my-5">
               <div className="flex gap-2 mb-4">
                 <MessageSquare />
-                <span className="font-medium text-lg">Comentarios</span>
+                <span className=" text-lg font-semibold">Comentarios</span>
               </div>
               <div className="flex gap-2 ">
                 <UserRound />

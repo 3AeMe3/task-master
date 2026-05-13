@@ -1,1 +1,1 @@
-export type Status = "PENDING" | "COMPLETED" | "OVERDUE";
+export type Status = "PENDIENTE" | "COMPLETADO" | "VENCIDO" | "ALL";
