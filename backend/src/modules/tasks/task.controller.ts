@@ -1,0 +1,98 @@
+import { Request, Response } from "express";
+
+import { asyncHandler } from "../../shared/http/async-handler";
+import { sendSuccess } from "../../shared/http/api-response";
+import { requireUserId } from "../../shared/http/request";
+import { parseIdParam, parseWithSchema } from "../../shared/http/validation";
+import { toTaskDto } from "./task.dto";
+import {
+  completeTask,
+  createSubTask,
+  createTask,
+  deleteSubTask,
+  deleteTask,
+  editTask,
+  findTask,
+  getTasks,
+  toggleSubTask,
+} from "./task.service";
+import { createSubTaskSchema, createTaskSchema, updateTaskSchema } from "./task.schemas";
+
+export const getTasksController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const tasks = await getTasks(userId);
+
+  sendSuccess(
+    res,
+    200,
+    tasks.map(toTaskDto),
+  );
+});
+
+export const createTaskController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const input = parseWithSchema(createTaskSchema, req.body);
+  const task = await createTask(userId, input);
+
+  sendSuccess(res, 201, toTaskDto(task), "Tarea creada correctamente");
+});
+
+export const findTaskController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const task = await findTask(userId, taskId);
+
+  sendSuccess(res, 200, toTaskDto(task));
+});
+
+export const completeTaskController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const task = await completeTask(userId, taskId);
+
+  sendSuccess(res, 200, toTaskDto(task), "Tarea completada correctamente");
+});
+
+export const deleteTaskController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const task = await deleteTask(userId, taskId);
+
+  sendSuccess(res, 200, toTaskDto(task), "Tarea eliminada correctamente");
+});
+
+export const editTaskController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const input = parseWithSchema(updateTaskSchema, req.body);
+  const task = await editTask(userId, taskId, input);
+
+  sendSuccess(res, 200, toTaskDto(task), "Tarea editada correctamente");
+});
+
+export const createSubTaskController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const input = parseWithSchema(createSubTaskSchema, req.body);
+  const task = await createSubTask(userId, taskId, input);
+
+  sendSuccess(res, 201, toTaskDto(task), "Subtarea creada correctamente");
+});
+
+export const toggleSubTaskController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const subTaskId = parseIdParam(req.params.subTaskId, "subTaskId");
+  const task = await toggleSubTask(userId, taskId, subTaskId);
+
+  sendSuccess(res, 200, toTaskDto(task), "Subtarea actualizada correctamente");
+});
+
+export const deleteSubTaskController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const subTaskId = parseIdParam(req.params.subTaskId, "subTaskId");
+  const task = await deleteSubTask(userId, taskId, subTaskId);
+
+  sendSuccess(res, 200, toTaskDto(task), "Subtarea eliminada correctamente");
+});

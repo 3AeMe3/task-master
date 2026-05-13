@@ -1,10 +1,9 @@
 import TaskClientView from "@/features/task/components/task-client-view";
 import CreateTask from "@/features/task/create-task";
-import GetTask from "@/lib/api/getTasks";
-import { Task } from "@/types/task";
+import { getTasks } from "@/features/task/services/task.server";
 
 export default async function AllTasks() {
-  const tasks: Task[] = await GetTask();
+  const tasks = await getTasks();
   return (
     <main className="px-10 min-h-screen flex flex-col">
       <div className="flex justify-between items-center h-30 mb-10">

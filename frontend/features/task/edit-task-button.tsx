@@ -1,8 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { taskSchema } from "@/features/task/schemas/task-form.schema";
+import type { Task } from "@/features/task/types/task.types";
+import type { TaskFormValues } from "@/features/task/forms/task-form";
+import {
+  getTaskFormValues,
+  defaultTaskValues,
+} from "@/features/task/forms/task-form";
+import { useUpdateTask } from "@/features/task/hooks/use-update-task";
+import useProjects from "@/features/projects/hooks/use-projects";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,37 +25,69 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldGroup } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Pencil } from "lucide-react";
+import TaskFormFields from "./components/task-form-fields";
 
-import * as z from "zod";
+type EditTaskButtonProps = {
+  task: Task;
+  onTaskUpdated: (task: Task) => void;
+  onError: (message: string | null) => void;
+};
 
-const taskEditSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-});
-
-type TaskEditFormValues = z.infer<typeof taskEditSchema>;
-import { getTaskData } from "./edit-task";
-
-export default function EditTaskButton({ id }: { id: string }) {
+export default function EditTaskButton({
+  task,
+  onTaskUpdated,
+  onError,
+}: EditTaskButtonProps) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const { data: projectData } = useProjects();
+  const { submit, error } = useUpdateTask();
   const {
     register,
     handleSubmit,
+    control,
+    reset,
     formState: { errors, isSubmitting },
-  } = useForm<TaskEditFormValues>({
-    resolver: zodResolver(taskEditSchema),
-    defaultValues: {
-      title: "aca deberia de ir el titulo anterior",
-      description: "aca deberia de ir la descripcion anterior",
-    },
+  } = useForm<TaskFormValues>({
+    resolver: zodResolver(taskSchema),
+    defaultValues: defaultTaskValues,
   });
 
-  const onValidEditTask = (data: TaskEditFormValues) => {
-    console.log(data);
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    reset(getTaskFormValues(task));
+  }, [open, reset, task]);
+
+  useEffect(() => {
+    if (!open || projectData.length === 0 || task.projectId) {
+      return;
+    }
+
+    reset((prev) => ({
+      ...prev,
+      projectId: projectData[0].id,
+    }));
+  }, [open, projectData, reset, task.projectId]);
+
+  const onValidEditTask = async (data: TaskFormValues) => {
+    const result = await submit(task.id, data);
+
+    if (!result.ok) {
+      onError(result.message);
+      toast.error(result.message);
+      return;
+    }
+
+    onError(null);
+    onTaskUpdated(result.task);
+    reset(getTaskFormValues(result.task));
+    setOpen(false);
+    router.refresh();
+    toast.success("Tarea editada correctamente");
   };
 
   return (
@@ -60,25 +103,19 @@ export default function EditTaskButton({ id }: { id: string }) {
           <DialogHeader>
             <DialogTitle>Edit Tarea</DialogTitle>
           </DialogHeader>
-          <FieldGroup className="my-5">
-            <Field>
-              <Label htmlFor="title">Título</Label>
-              <Input {...register("title")} />
-              {errors.title && <p>{errors.title.message}</p>}
-            </Field>
-            <Field>
-              <Label htmlFor="description">Descripción</Label>
-              <Input {...register("description")} />
-
-              {errors.description && <p>{errors.description.message}</p>}
-            </Field>
-          </FieldGroup>
+          <TaskFormFields
+            control={control}
+            errors={errors}
+            projectData={projectData}
+            register={register}
+          />
+          {error ? <p className="text-sm text-red-500">{error}</p> : null}
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Enviando..." : "Crear Task"}
+              {isSubmitting ? "Enviando..." : "Guardar Cambios"}
             </Button>
           </DialogFooter>
         </form>

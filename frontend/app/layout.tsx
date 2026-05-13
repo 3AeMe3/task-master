@@ -2,6 +2,7 @@ import { Inter, Sora } from "next/font/google";
 import type { Metadata } from "next";
 import "./globals.css";
 
+import { Toaster } from "@/components/ui/sonner";
 import ScrollToTop from "@/features/landingPage/components/scroll-to-top";
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function RootLayout({
         </div>
 
         <div className="text-white">{children}</div>
+        <Toaster />
       </body>
     </html>
   );

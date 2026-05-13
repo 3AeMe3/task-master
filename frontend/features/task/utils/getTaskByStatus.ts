@@ -1,5 +1,5 @@
-import { Task } from "@/types/task";
-import { Status } from "@/lib/types/status.types";
+import type { Task } from "../types/task.types";
+import type { Status } from "../types/task-status.types";
 
 export function getTaskByStatus(tasks: Task[], status: Status) {
   if (status === "ALL") return tasks;

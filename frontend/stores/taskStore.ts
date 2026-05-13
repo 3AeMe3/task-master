@@ -1,3 +1,3 @@
 import { create } from "zustand";
 
-const taskStore = create((set) => ({}));
+export const useTaskStore = create(() => ({}));

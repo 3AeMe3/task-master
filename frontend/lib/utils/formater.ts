@@ -1,5 +1,5 @@
-import { Task } from "@/types/task";
-import { Status } from "../types/status.types";
+import type { Status } from "@/features/task/types/task-status.types";
+import type { Task } from "@/features/task/types/task.types";
 import { format, startOfDay } from "date-fns";
 
 export function getStatus(tasks: Task[], status: Status) {
@@ -7,10 +7,18 @@ export function getStatus(tasks: Task[], status: Status) {
 }
 
 export function calcPercentage(part: number, whole: number) {
+  if (whole === 0) {
+    return "0";
+  }
+
   return Number((part / whole) * 100).toFixed(0);
 }
 
-export function dateFormater(date: string) {
+export function dateFormater(date?: string | null) {
+  if (!date) {
+    return "Sin fecha";
+  }
+
   return date.split("T")[0].split("-").reverse().join("-");
 }
 

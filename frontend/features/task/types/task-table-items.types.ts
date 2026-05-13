@@ -1,4 +1,4 @@
-import { Task } from "@/types/task";
+import type { Task } from "./task.types";
 
 export type TaskTableItemsProps = {
   task: Task;

@@ -5,6 +5,12 @@ import { useState } from "react";
 import Link from "next/link";
 export default function Navbar() {
   const [activeNav, setActiveNav] = useState(false);
+  const mobileLinks = [
+    { href: "/", label: "Home" },
+    { href: "/login", label: "Login" },
+    { href: "/register", label: "Register" },
+  ];
+
   return (
     <header className="relative   ">
       <nav className="hidden lg:flex p-4 z-100 w-3/4  mx-auto ">
@@ -49,17 +55,23 @@ export default function Navbar() {
             <ul
               className={` text-center flex flex-col gap-5 py-5 text-2xl font-semibold list-anim ${activeNav ? "animate-fade-in " : "animate-fade-out "} `}
             >
-              <li>Home</li>
-              <li>Home 2</li>
-              <li>Home 3</li>
-              <li>Home 4</li>
+              {mobileLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} onClick={() => setActiveNav(false)}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           )}
         </div>
       </nav>
-      <div
-        className={`lg:hidden h-screen w-full flex items-center justify-center fixed  z-10 bg-black/80 list-anim ${activeNav ? "animate-fade-in " : "animate-fade-out"} `}
-      ></div>
+      {activeNav ? (
+        <div
+          className="fixed z-10 h-screen w-full bg-black/80 lg:hidden"
+          onClick={() => setActiveNav(false)}
+        ></div>
+      ) : null}
     </header>
   );
 }

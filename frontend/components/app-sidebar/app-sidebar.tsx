@@ -14,6 +14,10 @@ import {
   SquareCheckBig,
   UserCircle,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
+
+import { logoutAction } from "@/features/auth/actions/logout-action";
+
 import {
   SidebarContent,
   SidebarFooter,
@@ -25,7 +29,6 @@ import {
   useSidebar,
 } from "../ui/sidebar";
 import GroupContent from "./group-content";
-import { usePathname } from "next/navigation";
 import { DropdownMenu } from "../ui/dropdown-menu";
 import {
   DropdownMenuTrigger,
@@ -41,14 +44,6 @@ import { AvatarImage, AvatarFallback } from "../ui/avatar";
 export default function AppSideBar() {
   const pathName = usePathname();
   const { isMobile } = useSidebar();
-
-  const handleLogOut = async () => {
-    await fetch("http://localhost:4000/logOut", {
-      method: "POST",
-      credentials: "include",
-    });
-    window.location.href = "/login";
-  };
   return (
     <Sidebar variant="inset" collapsible="icon">
       <SidebarHeader className="border-gray-300 border-b ">
@@ -147,7 +142,7 @@ export default function AppSideBar() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogOut}>
+                <DropdownMenuItem onClick={logoutAction}>
                   <LogOut />
                   Log out
                 </DropdownMenuItem>

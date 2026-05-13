@@ -3,10 +3,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import taskroutes from "./routes/taskRoutes";
-import projectRoutes from "./routes/projectRoutes";
-import authRoutes from "./routes/authRoutes";
-import meRoutes from "./routes/meRoutes";
+import authRoutes from "./modules/auth/auth.routes";
+import meRoutes from "./modules/me/me.routes";
+import projectRoutes from "./modules/projects/project.routes";
+import taskroutes from "./modules/tasks/task.routes";
+import { errorMiddleware } from "./shared/middleware/error-middleware";
 
 dotenv.config({ path: ".env.local" });
 const app = express();
@@ -22,6 +23,7 @@ app.use(meRoutes);
 app.use(taskroutes);
 app.use(projectRoutes);
 app.use(authRoutes);
+app.use(errorMiddleware);
 
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);

@@ -1,45 +1,38 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { taskSchema } from "@/schema/form-schema";
+import { taskSchema } from "@/features/task/schemas/task-form.schema";
 
-type Project = { id: number; name: string };
-import type { TaskFormValues } from "@/lib/forms/task-form";
-
-import useUserData from "@/hooks/use-user-data";
-import useProject from "@/hooks/use-project";
-import { useCreateTask } from "@/hooks/use-create-task";
-import { defaultTaskValues } from "@/lib/forms/task-form";
+import type { TaskFormValues } from "@/features/task/forms/task-form";
+import { defaultTaskValues } from "@/features/task/forms/task-form";
+import { useCreateTask } from "@/features/task/hooks/use-create-task";
+import useProjects from "@/features/projects/hooks/use-projects";
 
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldError, FieldGroup } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import TaskFormFields from "./components/task-form-fields";
 
 export default function CreateTask() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const { data: userData } = useUserData();
-  const { data: projectData } = useProject();
-  const { submit } = useCreateTask();
+  const { data: projectData, loading: isLoadingProjects, error: projectError } =
+    useProjects();
+  const { submit, error, clearError } = useCreateTask();
+  const hasProjects = projectData.length > 0;
   const {
     register,
     handleSubmit,
@@ -52,24 +45,38 @@ export default function CreateTask() {
   });
 
   useEffect(() => {
-    if (userData?.id) {
+    if (projectData.length > 0) {
       reset((prev) => ({
         ...prev,
-        projectId: userData.id,
+        projectId: projectData[0].id,
       }));
     }
-  }, [userData, reset]);
+  }, [projectData, reset]);
 
   const onValidSubmit = async (data: TaskFormValues) => {
-    const ok = await submit(data);
-    if (ok) {
+    const result = await submit(data);
+    if (result.ok) {
       reset();
       setOpen(false);
+      router.refresh();
+      toast.success("Tarea creada correctamente");
+      return;
     }
+
+    toast.error(result.message);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        clearError();
+        if (!nextOpen) {
+          reset(defaultTaskValues);
+        }
+        setOpen(nextOpen);
+      }}
+    >
       <DialogTrigger asChild>
         <Button className="text-white cursor-pointer bg-linear-to-r from-violet-400 to-indigo-500">
           + Crear Tarea
@@ -79,114 +86,49 @@ export default function CreateTask() {
         <form onSubmit={handleSubmit(onValidSubmit)}>
           <DialogHeader>
             <DialogTitle>Nueva Tarea</DialogTitle>
+            <DialogDescription>
+              Crea una tarea clara y asígnala a un proyecto para verla en tu panel.
+            </DialogDescription>
           </DialogHeader>
-          <FieldGroup className="my-5">
-            <Field>
-              <Label htmlFor="title">Título</Label>
-              <Input {...register("title")} />
-              {errors.title && <p>{errors.title.message}</p>}
-            </Field>
-            <Field>
-              <Label htmlFor="description">Descripción</Label>
-              <Input {...register("description")} />
-
-              {errors.description && <p>{errors.description.message}</p>}
-            </Field>
-            <Field>
-              <Label htmlFor="dueDate">Fecha de Vencimiento</Label>
-              <Input type="date" {...register("dueDate")} />
-              {errors.dueDate && <p>{errors.dueDate.message}</p>}
-            </Field>
-            <Field className="flex-row">
-              <div>
-                <Label className="mb-2">Prioridad</Label>
-                <Controller
-                  name="priority"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      value={field.value?.toString()}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="w-full max-w-48">
-                        <SelectValue placeholder="Selecciona la prioridad" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="BAJO">Bajo</SelectItem>
-                        <SelectItem value="NORMAL">Normal</SelectItem>
-                        <SelectItem value="URGENTE">Urgente</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div>
-                <Label className="mb-2">Status</Label>
-
-                <Controller
-                  name="status"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      value={field.value ? String(field.value) : undefined}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="w-full max-w-48">
-                        <SelectValue placeholder="Selecciona la prioridad" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="PENDIENTE">Pendiente</SelectItem>
-                        <SelectItem value="COMPLETADO">Completado</SelectItem>
-                        <SelectItem value="VENCIDO">Vencido</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-            </Field>
-            <Field className="flex-row">
-              <div>
-                <Label className="mb-2">Projects</Label>
-                <Controller
-                  name="projectId"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <Select
-                      value={field.value ? String(field.value) : undefined}
-                      onValueChange={(value) => field.onChange(Number(value))}
-                    >
-                      <SelectTrigger className="w-full max-w-48">
-                        <SelectValue placeholder="Seleccion el proyecto" />
-                      </SelectTrigger>
-                      <SelectGroup>
-                        <SelectContent position="item-aligned">
-                          {Array.isArray(projectData) &&
-                            projectData.map((project: Project) => (
-                              <SelectItem
-                                key={project.id}
-                                value={String(project.id)}
-                              >
-                                {project.name}
-                              </SelectItem>
-                            ))}
-                          {fieldState.error && (
-                            <FieldError errors={[fieldState.error]} />
-                          )}
-                        </SelectContent>
-                      </SelectGroup>
-                    </Select>
-                  )}
-                />
-              </div>
-            </Field>
-          </FieldGroup>
+          {projectError ? (
+            <p className="text-sm text-red-500">{projectError}</p>
+          ) : null}
+          {error ? <p className="text-sm text-red-500">{error}</p> : null}
+          {!projectError && !isLoadingProjects && !hasProjects ? (
+            <div className="my-5 rounded-xl border border-dashed border-gray-300 bg-[#fafbfc] p-4">
+              <p className="font-medium text-black">Todavía no tienes proyectos.</p>
+              <p className="mt-1 text-sm text-black/60">
+                Primero crea uno para organizar tus tareas y poder asignarlas.
+              </p>
+              <Button asChild className="mt-4" variant="outline">
+                <Link href="/projects" onClick={() => setOpen(false)}>
+                  Ir a proyectos
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <TaskFormFields
+              control={control}
+              errors={errors}
+              projectData={projectData}
+              register={register}
+            />
+          )}
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Enviando..." : "Crear Task"}
+            <Button
+              type="submit"
+              disabled={isSubmitting || isLoadingProjects || !hasProjects}
+            >
+              {isLoadingProjects
+                ? "Cargando proyectos..."
+                : isSubmitting
+                  ? "Enviando..."
+                  : hasProjects
+                    ? "Crear tarea"
+                    : "Crea un proyecto primero"}
             </Button>
           </DialogFooter>
         </form>
