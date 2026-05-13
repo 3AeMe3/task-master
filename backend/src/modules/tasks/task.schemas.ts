@@ -26,6 +26,7 @@ export const createTaskSchema = z.object({
   assigneeId: optionalNumberField,
   projectId: z.coerce.number().int().positive(),
   dueDate: optionalDateField,
+  tags: z.array(z.string().trim().min(1)).optional(),
 });
 
 export const updateTaskSchema = z
@@ -55,7 +56,16 @@ export const createTaskCommentSchema = z.object({
   content: z.string().trim().min(1, { error: "El comentario es requerido" }),
 });
 
+export const createTaskTagSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, { error: "La etiqueta es requerida" })
+    .max(30, { error: "La etiqueta es demasiado larga" }),
+});
+
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export type CreateSubTaskInput = z.infer<typeof createSubTaskSchema>;
 export type CreateTaskCommentInput = z.infer<typeof createTaskCommentSchema>;
+export type CreateTaskTagInput = z.infer<typeof createTaskTagSchema>;

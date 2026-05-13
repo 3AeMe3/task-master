@@ -25,6 +25,7 @@ function matchesTaskQuery(task: Task, rawQuery: string) {
     task.title,
     task.description ?? "",
     task.project?.name ?? "",
+    task.tags.map((tag) => tag.name).join(" "),
     task.priority,
     task.status,
   ];

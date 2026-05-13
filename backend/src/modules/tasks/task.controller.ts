@@ -6,11 +6,13 @@ import { requireUserId } from "../../shared/http/request";
 import { parseIdParam, parseWithSchema } from "../../shared/http/validation";
 import { toTaskDto } from "./task.dto";
 import {
+  addTaskTag,
   completeTask,
   createTaskComment,
   createSubTask,
   createTask,
   deleteTaskComment,
+  removeTaskTag,
   deleteSubTask,
   deleteTask,
   editTask,
@@ -21,6 +23,7 @@ import {
 import {
   createSubTaskSchema,
   createTaskCommentSchema,
+  createTaskTagSchema,
   createTaskSchema,
   updateTaskSchema,
 } from "./task.schemas";
@@ -75,6 +78,24 @@ export const editTaskController = asyncHandler(async (req: Request, res: Respons
   const task = await editTask(userId, taskId, input);
 
   sendSuccess(res, 200, toTaskDto(task), "Tarea editada correctamente");
+});
+
+export const addTaskTagController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const input = parseWithSchema(createTaskTagSchema, req.body);
+  const task = await addTaskTag(userId, taskId, input);
+
+  sendSuccess(res, 201, toTaskDto(task), "Etiqueta agregada correctamente");
+});
+
+export const removeTaskTagController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const tagId = parseIdParam(req.params.tagId, "tagId");
+  const task = await removeTaskTag(userId, taskId, tagId);
+
+  sendSuccess(res, 200, toTaskDto(task), "Etiqueta eliminada correctamente");
 });
 
 export const createSubTaskController = asyncHandler(async (req: Request, res: Response) => {

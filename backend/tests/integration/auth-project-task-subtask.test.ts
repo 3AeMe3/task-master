@@ -16,6 +16,13 @@ type JsonResponse<T> = {
   payload: T;
 };
 
+function toDateInputValue(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function waitForServer(
   childProcess: ReturnType<typeof spawn>,
   port: number,
@@ -46,7 +53,7 @@ function waitForServer(
   });
 }
 
-test("flujo auth -> project -> task -> subtask -> comment funciona end-to-end", async (t) => {
+test("flujo auth -> project -> task -> tag -> subtask -> comment funciona end-to-end", async (t) => {
   const tempDir = mkdtempSync(join(tmpdir(), "taskmaster-int-"));
   const databaseUrl = `file:${join(tempDir, "integration.db")}`;
   const port = 4400 + Math.floor(Math.random() * 400);
@@ -91,6 +98,10 @@ test("flujo auth -> project -> task -> subtask -> comment funciona end-to-end", 
   await waitForServer(server, port);
 
   let authCookie = "";
+  const pastDueDate = new Date();
+  pastDueDate.setDate(pastDueDate.getDate() - 1);
+  const futureDueDate = new Date();
+  futureDueDate.setDate(futureDueDate.getDate() + 2);
 
   async function request<T>(path: string, init: RequestInit = {}): Promise<JsonResponse<T>> {
     const headers = new Headers(init.headers);
@@ -159,7 +170,13 @@ test("flujo auth -> project -> task -> subtask -> comment funciona end-to-end", 
 
   const taskResult = await request<{
     success: true;
-    data: { id: number; title: string; subTasks: Array<{ id: number }> };
+    data: {
+      id: number;
+      title: string;
+      status: "PENDIENTE" | "COMPLETADO" | "VENCIDO";
+      tags: Array<{ id: number; name: string }>;
+      subTasks: Array<{ id: number }>;
+    };
   }>("/task", {
     method: "POST",
     body: JSON.stringify({
@@ -167,12 +184,51 @@ test("flujo auth -> project -> task -> subtask -> comment funciona end-to-end", 
       description: "Verificar flujo completo",
       priority: "NORMAL",
       projectId: projectResult.payload.data.id,
-      dueDate: "",
+      dueDate: toDateInputValue(pastDueDate),
+      tags: ["producto", "backend"],
     }),
   });
 
   assert.equal(taskResult.response.status, 201);
+  assert.equal(taskResult.payload.data.status, "VENCIDO");
+  assert.deepEqual(
+    taskResult.payload.data.tags.map((tag) => tag.name),
+    ["producto", "backend"],
+  );
   assert.equal(taskResult.payload.data.subTasks.length, 0);
+
+  const editTaskResult = await request<{
+    success: true;
+    data: {
+      status: "PENDIENTE" | "COMPLETADO" | "VENCIDO";
+      dueDate: string | null;
+    };
+  }>(`/edit-task/${taskResult.payload.data.id}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      dueDate: toDateInputValue(futureDueDate),
+    }),
+  });
+
+  assert.equal(editTaskResult.response.status, 200);
+  assert.equal(editTaskResult.payload.data.status, "PENDIENTE");
+  assert.ok(editTaskResult.payload.data.dueDate?.startsWith(toDateInputValue(futureDueDate)));
+
+  const tagId = taskResult.payload.data.tags[0]?.id;
+  assert.ok(tagId, "La etiqueta creada debe incluir id");
+
+  const deleteTagResult = await request<{
+    success: true;
+    data: { tags: Array<{ name: string }> };
+  }>(`/task/${taskResult.payload.data.id}/tags/${tagId}`, {
+    method: "DELETE",
+  });
+
+  assert.equal(deleteTagResult.response.status, 200);
+  assert.deepEqual(
+    deleteTagResult.payload.data.tags.map((tag) => tag.name),
+    ["backend"],
+  );
 
   const createSubTaskResult = await request<{
     success: true;

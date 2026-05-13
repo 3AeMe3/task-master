@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { toCurrentUserDto } from "../src/modules/me/me.dto";
 import { toProjectDto } from "../src/modules/projects/project.dto";
-import { toTaskDto } from "../src/modules/tasks/task.dto";
+import { resolveTaskStatus, toTaskDto } from "../src/modules/tasks/task.dto";
 
 test("toProjectDto expone description null para estabilizar el contrato", () => {
   const project = toProjectDto({
@@ -56,6 +56,14 @@ test("toTaskDto serializa fechas y proyecto anidado al shape publico", () => {
       name: "Roadmap",
       userId: 3,
     },
+    taskTags: [
+      {
+        tag: {
+          id: 50,
+          name: "backend",
+        },
+      },
+    ],
     subTasks: [
       {
         id: 99,
@@ -95,6 +103,12 @@ test("toTaskDto serializa fechas y proyecto anidado al shape publico", () => {
       userId: 3,
       description: null,
     },
+    tags: [
+      {
+        id: 50,
+        name: "backend",
+      },
+    ],
     subTasks: [
       {
         id: 99,
@@ -134,6 +148,7 @@ test("toTaskDto mantiene nulls cuando la tarea no tiene fecha ni proyecto cargad
     projectId: 7,
     assigneeId: 11,
     project: null,
+    taskTags: [],
     subTasks: [],
     comments: [],
   });
@@ -151,7 +166,28 @@ test("toTaskDto mantiene nulls cuando la tarea no tiene fecha ni proyecto cargad
     projectId: 7,
     assigneeId: 11,
     project: null,
+    tags: [],
     subTasks: [],
     comments: [],
   });
+});
+
+test("resolveTaskStatus marca vencida una tarea pendiente con fecha pasada", () => {
+  assert.equal(
+    resolveTaskStatus({
+      status: "PENDIENTE",
+      dueDate: new Date("2000-05-13T00:00:00.000Z"),
+    }),
+    "VENCIDO",
+  );
+});
+
+test("resolveTaskStatus devuelve pendiente cuando la fecha futura corrige un VENCIDO guardado", () => {
+  assert.equal(
+    resolveTaskStatus({
+      status: "VENCIDO",
+      dueDate: new Date("2099-05-13T00:00:00.000Z"),
+    }),
+    "PENDIENTE",
+  );
 });

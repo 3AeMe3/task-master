@@ -20,6 +20,11 @@ export interface TaskComment {
   };
 }
 
+export interface TaskTag {
+  id: number;
+  name: string;
+}
+
 export interface Task {
   id: number;
   title: string;
@@ -33,6 +38,7 @@ export interface Task {
   projectId: number;
   assigneeId: number | null;
   project: Project | null;
+  tags: TaskTag[];
   subTasks: SubTask[];
   comments: TaskComment[];
 }

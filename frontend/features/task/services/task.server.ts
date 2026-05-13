@@ -9,6 +9,13 @@ import { fetchWithAuth } from "@/lib/http/fetch-with-auth";
 import type { TaskFormValues } from "../forms/task-form";
 import type { Task } from "../types/task.types";
 
+function parseTagNames(rawTagNames?: string) {
+  return [...new Set((rawTagNames ?? "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean))];
+}
+
 export async function getTasks(): Promise<Task[]> {
   const response = await fetchWithAuth("task");
 
@@ -22,9 +29,13 @@ export async function getTasks(): Promise<Task[]> {
 }
 
 export async function createTask(data: TaskFormValues) {
+  const { tagNames, ...taskData } = data;
   const response = await fetchWithAuth("task", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      ...taskData,
+      tags: parseTagNames(tagNames),
+    }),
   });
 
   if (response.status === 401) {
@@ -122,6 +133,10 @@ type CreateTaskCommentInput = {
   content: string;
 };
 
+type CreateTaskTagInput = {
+  name: string;
+};
+
 function revalidateTaskViews() {
   revalidatePath("/home");
   revalidatePath("/tasks");
@@ -202,6 +217,37 @@ export async function deleteTaskComment(taskId: number, commentId: number): Prom
   }
 
   const result = await readApiResponse<Task>(response, "Error al eliminar el comentario");
+
+  revalidateTaskViews();
+  return result.data;
+}
+
+export async function createTaskTag(taskId: number, data: CreateTaskTagInput): Promise<Task> {
+  const response = await fetchWithAuth(`task/${taskId}/tags`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+  if (response.status === 401) {
+    redirect("/login");
+  }
+
+  const result = await readApiResponse<Task>(response, "Error al crear la etiqueta");
+
+  revalidateTaskViews();
+  return result.data;
+}
+
+export async function deleteTaskTag(taskId: number, tagId: number): Promise<Task> {
+  const response = await fetchWithAuth(`task/${taskId}/tags/${tagId}`, {
+    method: "DELETE",
+  });
+
+  if (response.status === 401) {
+    redirect("/login");
+  }
+
+  const result = await readApiResponse<Task>(response, "Error al eliminar la etiqueta");
 
   revalidateTaskViews();
   return result.data;

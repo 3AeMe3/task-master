@@ -12,16 +12,22 @@ export const defaultTaskValues: TaskFormValues = {
   priority: "NORMAL",
   projectId: undefined,
   dueDate: "",
+  tagNames: "",
 };
+
+function getEditableStatus(status?: Task["status"]) {
+  return status === "COMPLETADO" ? "COMPLETADO" : "PENDIENTE";
+}
 
 export function getTaskFormValues(task?: Partial<Task>): TaskFormValues {
   return {
     ...defaultTaskValues,
     title: task?.title ?? defaultTaskValues.title,
     description: task?.description ?? defaultTaskValues.description,
-    status: task?.status ?? defaultTaskValues.status,
+    status: getEditableStatus(task?.status),
     priority: task?.priority ?? defaultTaskValues.priority,
     projectId: task?.projectId ?? task?.project?.id ?? defaultTaskValues.projectId,
     dueDate: task?.dueDate ? task.dueDate.split("T")[0] : defaultTaskValues.dueDate,
+    tagNames: task?.tags?.map((tag) => tag.name).join(", ") ?? defaultTaskValues.tagNames,
   };
 }

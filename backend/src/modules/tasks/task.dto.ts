@@ -1,3 +1,5 @@
+import { isBefore, startOfDay } from "date-fns";
+
 import { ProjectDto, toProjectDto } from "../projects/project.dto";
 
 type SubTaskDtoInput = {
@@ -12,6 +14,13 @@ type TaskCommentDtoInput = {
   content: string;
   createdAt: Date;
   author: {
+    id: number;
+    name: string;
+  };
+};
+
+type TaskTagDtoInput = {
+  tag: {
     id: number;
     name: string;
   };
@@ -34,6 +43,7 @@ type TaskDtoInput = {
     name: string;
     userId: number;
   } | null;
+  taskTags?: TaskTagDtoInput[];
   subTasks?: SubTaskDtoInput[];
   comments?: TaskCommentDtoInput[];
 };
@@ -55,6 +65,11 @@ export type TaskCommentDto = {
   };
 };
 
+export type TaskTagDto = {
+  id: number;
+  name: string;
+};
+
 export type TaskDto = {
   id: number;
   title: string;
@@ -68,9 +83,22 @@ export type TaskDto = {
   projectId: number;
   assigneeId: number | null;
   project: ProjectDto | null;
+  tags: TaskTagDto[];
   subTasks: SubTaskDto[];
   comments: TaskCommentDto[];
 };
+
+export function resolveTaskStatus(task: Pick<TaskDtoInput, "status" | "dueDate">) {
+  if (task.status === "COMPLETADO") {
+    return "COMPLETADO";
+  }
+
+  if (!task.dueDate) {
+    return "PENDIENTE";
+  }
+
+  return isBefore(startOfDay(task.dueDate), startOfDay(new Date())) ? "VENCIDO" : "PENDIENTE";
+}
 
 export function toSubTaskDto(subTask: SubTaskDtoInput): SubTaskDto {
   return {
@@ -93,13 +121,20 @@ export function toTaskCommentDto(comment: TaskCommentDtoInput): TaskCommentDto {
   };
 }
 
+export function toTaskTagDto(taskTag: TaskTagDtoInput): TaskTagDto {
+  return {
+    id: taskTag.tag.id,
+    name: taskTag.tag.name,
+  };
+}
+
 export function toTaskDto(task: TaskDtoInput): TaskDto {
   return {
     id: task.id,
     title: task.title,
     description: task.description,
     priority: task.priority,
-    status: task.status,
+    status: resolveTaskStatus(task),
     createdAt: task.createdAt.toISOString(),
     updatedAt: task.updatedAt.toISOString(),
     dueDate: task.dueDate?.toISOString() ?? null,
@@ -107,6 +142,7 @@ export function toTaskDto(task: TaskDtoInput): TaskDto {
     projectId: task.projectId,
     assigneeId: task.assigneeId,
     project: task.project ? toProjectDto(task.project) : null,
+    tags: task.taskTags?.map(toTaskTagDto) ?? [],
     subTasks: task.subTasks?.map(toSubTaskDto) ?? [],
     comments: task.comments?.map(toTaskCommentDto) ?? [],
   };

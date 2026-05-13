@@ -23,6 +23,7 @@ type TaskFormFieldsProps = {
   errors: FieldErrors<TaskFormValues>;
   projectData: Project[];
   register: UseFormRegister<TaskFormValues>;
+  showTagInput?: boolean;
 };
 
 export default function TaskFormFields({
@@ -30,6 +31,7 @@ export default function TaskFormFields({
   errors,
   projectData,
   register,
+  showTagInput = false,
 }: TaskFormFieldsProps) {
   return (
     <FieldGroup className="my-5">
@@ -60,6 +62,20 @@ export default function TaskFormFields({
         </p>
         {errors.dueDate ? <FieldError errors={[errors.dueDate]} /> : null}
       </Field>
+      {showTagInput ? (
+        <Field>
+          <Label htmlFor="tagNames">Tags</Label>
+          <Input
+            {...register("tagNames")}
+            aria-invalid={Boolean(errors.tagNames)}
+            placeholder="Ej. backend, urgente, cliente-a"
+          />
+          <p className="text-xs text-black/50">
+            Opcional. Sepáralas por coma y se crearán junto con la tarea.
+          </p>
+          {errors.tagNames ? <FieldError errors={[errors.tagNames]} /> : null}
+        </Field>
+      ) : null}
       <Field className="flex-row">
         <div>
           <Label className="mb-2">Prioridad</Label>
@@ -100,11 +116,13 @@ export default function TaskFormFields({
                 <SelectContent>
                   <SelectItem value="PENDIENTE">Pendiente</SelectItem>
                   <SelectItem value="COMPLETADO">Completado</SelectItem>
-                  <SelectItem value="VENCIDO">Vencido</SelectItem>
                 </SelectContent>
               </Select>
             )}
           />
+          <p className="mt-2 text-xs text-black/50">
+            Las tareas vencidas se marcan automáticamente según la fecha límite.
+          </p>
         </div>
       </Field>
       <Field className="flex-row">

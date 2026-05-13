@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   createSubTaskSchema,
   createTaskCommentSchema,
+  createTaskTagSchema,
   createTaskSchema,
   updateTaskSchema,
 } from "../src/modules/tasks/task.schemas";
@@ -25,6 +26,7 @@ test("createTaskSchema normaliza campos opcionales vacios", () => {
     projectId: 5,
     dueDate: undefined,
     assigneeId: undefined,
+    tags: undefined,
   });
 });
 
@@ -76,4 +78,18 @@ test("createTaskCommentSchema exige contenido", () => {
   }
 
   assert.equal(result.error.issues[0]?.message, "El comentario es requerido");
+});
+
+test("createTaskTagSchema exige nombre valido", () => {
+  const result = createTaskTagSchema.safeParse({
+    name: "   ",
+  });
+
+  assert.equal(result.success, false);
+
+  if (result.success) {
+    assert.fail("Se esperaba un error por etiqueta vacia");
+  }
+
+  assert.equal(result.error.issues[0]?.message, "La etiqueta es requerida");
 });

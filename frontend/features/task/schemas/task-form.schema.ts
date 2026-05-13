@@ -7,11 +7,12 @@ export const taskSchema = z
       .string()
       .trim()
       .min(1, { error: "Agrega una descripcion breve" }),
-    status: z.enum(["PENDIENTE", "COMPLETADO", "VENCIDO"]).optional(),
+    status: z.enum(["PENDIENTE", "COMPLETADO"]).optional(),
     priority: z.enum(["BAJO", "NORMAL", "URGENTE"]).optional(),
     assigneeId: z.number().optional(),
     projectId: z.number().int().positive().optional(),
     dueDate: z.string().trim(),
+    tagNames: z.string().trim().optional(),
   })
   .refine((values) => values.projectId !== undefined, {
     error: "Selecciona un proyecto",

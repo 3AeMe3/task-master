@@ -8,6 +8,7 @@ import CompleteTaskButton from "../complete-task-button";
 import DeleteTaskButton from "../delete-task-button";
 import EditTaskButton from "../edit-task-button";
 import TaskComments from "./task-comments";
+import TaskTags from "./task-tags";
 import TaskSubtasks from "./task-subtasks";
 
 import {
@@ -227,10 +228,13 @@ export default function TaskClientView({
                 </div>
               </div>
               <div className="col-span-2 flex  flex-col gap-3 ">
-                <span className=" text-lg font-semibold ">Tags</span>
-                <div className="rounded-lg border border-dashed border-gray-300 bg-white p-4 text-sm text-black/50">
-                  Esta tarea no tiene etiquetas asociadas.
-                </div>
+                {selectedTask ? (
+                  <TaskTags
+                    task={selectedTask}
+                    onError={setActionError}
+                    onTaskUpdated={handleTaskUpdated}
+                  />
+                ) : null}
               </div>
             </div>
             <div className="py-5 flex flex-col gap-3 border-b border-gray-200">

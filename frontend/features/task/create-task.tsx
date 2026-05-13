@@ -112,6 +112,7 @@ export default function CreateTask() {
               errors={errors}
               projectData={projectData}
               register={register}
+              showTagInput
             />
           )}
           <DialogFooter>
