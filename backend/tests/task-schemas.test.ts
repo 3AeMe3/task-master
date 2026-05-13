@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   createSubTaskSchema,
+  createTaskCommentSchema,
   createTaskSchema,
   updateTaskSchema,
 } from "../src/modules/tasks/task.schemas";
@@ -61,4 +62,18 @@ test("createSubTaskSchema exige un titulo valido", () => {
   }
 
   assert.equal(result.error.issues[0]?.message, "El titulo es requerido");
+});
+
+test("createTaskCommentSchema exige contenido", () => {
+  const result = createTaskCommentSchema.safeParse({
+    content: "   ",
+  });
+
+  assert.equal(result.success, false);
+
+  if (result.success) {
+    assert.fail("Se esperaba un error por comentario vacio");
+  }
+
+  assert.equal(result.error.issues[0]?.message, "El comentario es requerido");
 });

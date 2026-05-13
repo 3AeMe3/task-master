@@ -46,7 +46,7 @@ function waitForServer(
   });
 }
 
-test("flujo auth -> project -> task -> subtask funciona end-to-end", async (t) => {
+test("flujo auth -> project -> task -> subtask -> comment funciona end-to-end", async (t) => {
   const tempDir = mkdtempSync(join(tmpdir(), "taskmaster-int-"));
   const databaseUrl = `file:${join(tempDir, "integration.db")}`;
   const port = 4400 + Math.floor(Math.random() * 400);
@@ -213,4 +213,42 @@ test("flujo auth -> project -> task -> subtask funciona end-to-end", async (t) =
 
   assert.equal(deleteSubTaskResult.response.status, 200);
   assert.deepEqual(deleteSubTaskResult.payload.data.subTasks, []);
+
+  const createCommentResult = await request<{
+    success: true;
+    data: {
+      comments: Array<{
+        id: number;
+        content: string;
+        author: { name: string };
+      }>;
+    };
+  }>(`/task/${taskResult.payload.data.id}/comments`, {
+    method: "POST",
+    body: JSON.stringify({ content: "Primer comentario de integracion" }),
+  });
+
+  assert.equal(createCommentResult.response.status, 201);
+  assert.equal(createCommentResult.payload.data.comments.length, 1);
+  assert.equal(
+    createCommentResult.payload.data.comments[0]?.content,
+    "Primer comentario de integracion",
+  );
+  assert.equal(
+    createCommentResult.payload.data.comments[0]?.author.name,
+    "Integration Tester",
+  );
+
+  const commentId = createCommentResult.payload.data.comments[0]?.id;
+  assert.ok(commentId, "El comentario creado debe incluir id");
+
+  const deleteCommentResult = await request<{
+    success: true;
+    data: { comments: Array<unknown> };
+  }>(`/task/${taskResult.payload.data.id}/comments/${commentId}`, {
+    method: "DELETE",
+  });
+
+  assert.equal(deleteCommentResult.response.status, 200);
+  assert.deepEqual(deleteCommentResult.payload.data.comments, []);
 });

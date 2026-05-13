@@ -7,6 +7,7 @@ import { TaskClientViewProps } from "../types/task-client-view.types";
 import CompleteTaskButton from "../complete-task-button";
 import DeleteTaskButton from "../delete-task-button";
 import EditTaskButton from "../edit-task-button";
+import TaskComments from "./task-comments";
 import TaskSubtasks from "./task-subtasks";
 
 import {
@@ -21,7 +22,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Calendar,
   Clock,
-  MessageSquareOff,
   Tag,
   UserRound,
 } from "lucide-react";
@@ -244,15 +244,13 @@ export default function TaskClientView({
                 />
               ) : null}
             </div>
-            <div className="my-5">
-              <div className="flex gap-2 mb-4">
-                <MessageSquareOff />
-                <span className=" text-lg font-semibold">Comentarios</span>
-              </div>
-              <div className="rounded-lg border border-dashed border-gray-300 bg-white p-4 text-sm text-black/50">
-                Los comentarios todavía no están disponibles en esta versión.
-              </div>
-            </div>
+            {selectedTask ? (
+              <TaskComments
+                task={selectedTask}
+                onError={setActionError}
+                onTaskUpdated={handleTaskUpdated}
+              />
+            ) : null}
           </div>
         </SheetContent>
       </Sheet>

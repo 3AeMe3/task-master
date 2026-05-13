@@ -51,6 +51,11 @@ export const createSubTaskSchema = z.object({
   description: z.string().trim().optional(),
 });
 
+export const createTaskCommentSchema = z.object({
+  content: z.string().trim().min(1, { error: "El comentario es requerido" }),
+});
+
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export type CreateSubTaskInput = z.infer<typeof createSubTaskSchema>;
+export type CreateTaskCommentInput = z.infer<typeof createTaskCommentSchema>;

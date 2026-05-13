@@ -64,6 +64,17 @@ test("toTaskDto serializa fechas y proyecto anidado al shape publico", () => {
         completed: false,
       },
     ],
+    comments: [
+      {
+        id: 150,
+        content: "Primer comentario",
+        createdAt: new Date("2026-05-13T18:00:00.000Z"),
+        author: {
+          id: 3,
+          name: "Aimz",
+        },
+      },
+    ],
   });
 
   assert.deepEqual(task, {
@@ -92,6 +103,17 @@ test("toTaskDto serializa fechas y proyecto anidado al shape publico", () => {
         completed: false,
       },
     ],
+    comments: [
+      {
+        id: 150,
+        content: "Primer comentario",
+        createdAt: "2026-05-13T18:00:00.000Z",
+        author: {
+          id: 3,
+          name: "Aimz",
+        },
+      },
+    ],
   });
 });
 
@@ -113,6 +135,7 @@ test("toTaskDto mantiene nulls cuando la tarea no tiene fecha ni proyecto cargad
     assigneeId: 11,
     project: null,
     subTasks: [],
+    comments: [],
   });
 
   assert.deepEqual(task, {
@@ -129,5 +152,6 @@ test("toTaskDto mantiene nulls cuando la tarea no tiene fecha ni proyecto cargad
     assigneeId: 11,
     project: null,
     subTasks: [],
+    comments: [],
   });
 });

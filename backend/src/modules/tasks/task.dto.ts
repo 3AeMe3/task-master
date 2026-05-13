@@ -7,6 +7,16 @@ type SubTaskDtoInput = {
   completed: boolean;
 };
 
+type TaskCommentDtoInput = {
+  id: number;
+  content: string;
+  createdAt: Date;
+  author: {
+    id: number;
+    name: string;
+  };
+};
+
 type TaskDtoInput = {
   id: number;
   title: string;
@@ -25,6 +35,7 @@ type TaskDtoInput = {
     userId: number;
   } | null;
   subTasks?: SubTaskDtoInput[];
+  comments?: TaskCommentDtoInput[];
 };
 
 export type SubTaskDto = {
@@ -32,6 +43,16 @@ export type SubTaskDto = {
   title: string;
   description: string | null;
   completed: boolean;
+};
+
+export type TaskCommentDto = {
+  id: number;
+  content: string;
+  createdAt: string;
+  author: {
+    id: number;
+    name: string;
+  };
 };
 
 export type TaskDto = {
@@ -48,6 +69,7 @@ export type TaskDto = {
   assigneeId: number | null;
   project: ProjectDto | null;
   subTasks: SubTaskDto[];
+  comments: TaskCommentDto[];
 };
 
 export function toSubTaskDto(subTask: SubTaskDtoInput): SubTaskDto {
@@ -56,6 +78,18 @@ export function toSubTaskDto(subTask: SubTaskDtoInput): SubTaskDto {
     title: subTask.title,
     description: subTask.description,
     completed: subTask.completed,
+  };
+}
+
+export function toTaskCommentDto(comment: TaskCommentDtoInput): TaskCommentDto {
+  return {
+    id: comment.id,
+    content: comment.content,
+    createdAt: comment.createdAt.toISOString(),
+    author: {
+      id: comment.author.id,
+      name: comment.author.name,
+    },
   };
 }
 
@@ -74,5 +108,6 @@ export function toTaskDto(task: TaskDtoInput): TaskDto {
     assigneeId: task.assigneeId,
     project: task.project ? toProjectDto(task.project) : null,
     subTasks: task.subTasks?.map(toSubTaskDto) ?? [],
+    comments: task.comments?.map(toTaskCommentDto) ?? [],
   };
 }

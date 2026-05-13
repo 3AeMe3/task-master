@@ -118,6 +118,10 @@ type CreateSubTaskInput = {
   description?: string;
 };
 
+type CreateTaskCommentInput = {
+  content: string;
+};
+
 function revalidateTaskViews() {
   revalidatePath("/home");
   revalidatePath("/tasks");
@@ -164,6 +168,40 @@ export async function deleteSubTask(taskId: number, subTaskId: number): Promise<
   }
 
   const result = await readApiResponse<Task>(response, "Error al eliminar la subtarea");
+
+  revalidateTaskViews();
+  return result.data;
+}
+
+export async function createTaskComment(
+  taskId: number,
+  data: CreateTaskCommentInput,
+): Promise<Task> {
+  const response = await fetchWithAuth(`task/${taskId}/comments`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+  if (response.status === 401) {
+    redirect("/login");
+  }
+
+  const result = await readApiResponse<Task>(response, "Error al crear el comentario");
+
+  revalidateTaskViews();
+  return result.data;
+}
+
+export async function deleteTaskComment(taskId: number, commentId: number): Promise<Task> {
+  const response = await fetchWithAuth(`task/${taskId}/comments/${commentId}`, {
+    method: "DELETE",
+  });
+
+  if (response.status === 401) {
+    redirect("/login");
+  }
+
+  const result = await readApiResponse<Task>(response, "Error al eliminar el comentario");
 
   revalidateTaskViews();
   return result.data;

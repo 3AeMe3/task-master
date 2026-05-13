@@ -7,8 +7,10 @@ import { parseIdParam, parseWithSchema } from "../../shared/http/validation";
 import { toTaskDto } from "./task.dto";
 import {
   completeTask,
+  createTaskComment,
   createSubTask,
   createTask,
+  deleteTaskComment,
   deleteSubTask,
   deleteTask,
   editTask,
@@ -16,7 +18,12 @@ import {
   getTasks,
   toggleSubTask,
 } from "./task.service";
-import { createSubTaskSchema, createTaskSchema, updateTaskSchema } from "./task.schemas";
+import {
+  createSubTaskSchema,
+  createTaskCommentSchema,
+  createTaskSchema,
+  updateTaskSchema,
+} from "./task.schemas";
 
 export const getTasksController = asyncHandler(async (req: Request, res: Response) => {
   const userId = requireUserId(req);
@@ -95,4 +102,22 @@ export const deleteSubTaskController = asyncHandler(async (req: Request, res: Re
   const task = await deleteSubTask(userId, taskId, subTaskId);
 
   sendSuccess(res, 200, toTaskDto(task), "Subtarea eliminada correctamente");
+});
+
+export const createTaskCommentController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const input = parseWithSchema(createTaskCommentSchema, req.body);
+  const task = await createTaskComment(userId, taskId, input);
+
+  sendSuccess(res, 201, toTaskDto(task), "Comentario creado correctamente");
+});
+
+export const deleteTaskCommentController = asyncHandler(async (req: Request, res: Response) => {
+  const userId = requireUserId(req);
+  const taskId = parseIdParam(req.params.id);
+  const commentId = parseIdParam(req.params.commentId, "commentId");
+  const task = await deleteTaskComment(userId, taskId, commentId);
+
+  sendSuccess(res, 200, toTaskDto(task), "Comentario eliminado correctamente");
 });

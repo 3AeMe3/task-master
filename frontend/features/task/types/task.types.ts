@@ -10,6 +10,16 @@ export interface SubTask {
   completed: boolean;
 }
 
+export interface TaskComment {
+  id: number;
+  content: string;
+  createdAt: string;
+  author: {
+    id: number;
+    name: string;
+  };
+}
+
 export interface Task {
   id: number;
   title: string;
@@ -24,4 +34,5 @@ export interface Task {
   assigneeId: number | null;
   project: Project | null;
   subTasks: SubTask[];
+  comments: TaskComment[];
 }

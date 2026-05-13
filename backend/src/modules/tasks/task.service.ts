@@ -2,13 +2,31 @@ import { parse } from "date-fns";
 
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../shared/errors/http-error";
-import { CreateSubTaskInput, CreateTaskInput, UpdateTaskInput } from "./task.schemas";
+import {
+  CreateSubTaskInput,
+  CreateTaskCommentInput,
+  CreateTaskInput,
+  UpdateTaskInput,
+} from "./task.schemas";
 
 const taskDetailInclude = {
   project: true,
   subTasks: {
     orderBy: {
       id: "asc" as const,
+    },
+  },
+  comments: {
+    orderBy: {
+      createdAt: "asc" as const,
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
   },
 };
@@ -54,6 +72,28 @@ async function getOwnedSubTaskOrThrow(userId: number, taskId: number, subTaskId:
   }
 
   return subTask;
+}
+
+async function getOwnedTaskCommentOrThrow(
+  userId: number,
+  taskId: number,
+  commentId: number,
+) {
+  const comment = await prisma.taskComment.findFirst({
+    where: {
+      id: commentId,
+      taskId,
+      task: {
+        createdById: userId,
+      },
+    },
+  });
+
+  if (!comment) {
+    throw new HttpError(404, "Comentario no encontrado");
+  }
+
+  return comment;
 }
 
 function parseDueDate(dueDate?: string) {
@@ -108,6 +148,9 @@ export async function deleteTask(userId: number, taskId: number) {
 
   await prisma.$transaction([
     prisma.subTask.deleteMany({
+      where: { taskId },
+    }),
+    prisma.taskComment.deleteMany({
       where: { taskId },
     }),
     prisma.task.delete({
@@ -180,6 +223,38 @@ export async function deleteSubTask(userId: number, taskId: number, subTaskId: n
 
   await prisma.subTask.delete({
     where: { id: subTaskId },
+  });
+
+  return getOwnedTaskOrThrow(userId, taskId);
+}
+
+export async function createTaskComment(
+  userId: number,
+  taskId: number,
+  input: CreateTaskCommentInput,
+) {
+  await getOwnedTaskOrThrow(userId, taskId);
+
+  await prisma.taskComment.create({
+    data: {
+      taskId,
+      authorId: userId,
+      content: input.content,
+    },
+  });
+
+  return getOwnedTaskOrThrow(userId, taskId);
+}
+
+export async function deleteTaskComment(
+  userId: number,
+  taskId: number,
+  commentId: number,
+) {
+  await getOwnedTaskCommentOrThrow(userId, taskId, commentId);
+
+  await prisma.taskComment.delete({
+    where: { id: commentId },
   });
 
   return getOwnedTaskOrThrow(userId, taskId);

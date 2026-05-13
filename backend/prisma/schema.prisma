@@ -31,6 +31,7 @@ model User {
   password String
 
   projects      Project[]
+  taskComments  TaskComment[]
   assignedTasks Task[]    @relation("AssignedTasks")
   createdTasks  Task[]    @relation("CreatedTasks")
 }
@@ -66,6 +67,7 @@ model Task {
   taskTags TaskTag[]
 
   subTasks SubTask[]
+  comments TaskComment[]
 }
 
 model Tag {
@@ -93,4 +95,16 @@ model TaskTag {
   tag  Tag  @relation(fields: [tagId], references: [id])
 
   @@id([taskId, tagId])
+}
+
+model TaskComment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  taskId Int
+  task   Task @relation(fields: [taskId], references: [id])
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
 }
