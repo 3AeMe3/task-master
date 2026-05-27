@@ -96,7 +96,9 @@ function normalizeTagName(name) {
     return name.trim().toLowerCase();
 }
 async function assignTagsToTask(taskId, tagNames) {
-    const normalizedTagNames = [...new Set((tagNames ?? []).map(normalizeTagName).filter(Boolean))];
+    const normalizedTagNames = [
+        ...new Set((tagNames ?? []).map(normalizeTagName).filter(Boolean)),
+    ];
     for (const tagName of normalizedTagNames) {
         const tag = await prisma.tag.upsert({
             where: { name: tagName },
@@ -203,12 +205,16 @@ export async function editTask(userId, taskId, input) {
     }
     const data = {
         ...(input.title !== undefined ? { title: input.title } : {}),
-        ...(input.description !== undefined ? { description: input.description } : {}),
+        ...(input.description !== undefined
+            ? { description: input.description }
+            : {}),
         ...(normalizedStatus !== undefined ? { status: normalizedStatus } : {}),
         ...(input.priority !== undefined ? { priority: input.priority } : {}),
         ...(input.projectId !== undefined ? { projectId: input.projectId } : {}),
         ...(input.assigneeId !== undefined ? { assigneeId: input.assigneeId } : {}),
-        ...(input.dueDate !== undefined ? { dueDate: parseDueDate(input.dueDate) } : {}),
+        ...(input.dueDate !== undefined
+            ? { dueDate: parseDueDate(input.dueDate) }
+            : {}),
     };
     return prisma.task.update({
         where: { id: taskId },
