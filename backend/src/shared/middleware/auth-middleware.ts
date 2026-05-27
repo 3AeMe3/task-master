@@ -25,7 +25,7 @@ function isAuthUser(payload: unknown): payload is AuthUser {
   );
 }
 
-export function verifyToken(req: Request, _res: Response, next: NextFunction) {
+export function verifyToken(req: Request & { user?: AuthUser }, _res: Response, next: NextFunction) {
   try {
     let token = req.cookies?.access_token;
 

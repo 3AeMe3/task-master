@@ -1,8 +1,9 @@
 import { Request } from "express";
 
 import { HttpError } from "../errors/http-error";
+import { AuthUser } from "../types/auth-user";
 
-export function requireUserId(req: Request): number {
+export function requireUserId(req: Request & { user?: AuthUser }): number {
   const userId = req.user?.userId;
 
   if (!userId) {
