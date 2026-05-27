@@ -17,7 +17,22 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); //siempre colocarlo antes de cors no despues
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+
+// CORS: allow FRONTEND_URL (set in env) or default localhost for dev
+const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000").split(",");
+const corsOptions = {
+  origin: (origin: string | undefined, cb: any) => {
+    // allow server-to-server or same-origin requests (no origin)
+    if (!origin) return cb(null, true);
+
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+
+    return cb(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(meRoutes);
 app.use(taskroutes);

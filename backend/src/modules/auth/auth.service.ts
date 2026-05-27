@@ -24,10 +24,13 @@ export function getAuthCookieName() {
 }
 
 export function getAuthCookieOptions(): CookieOptions {
+  const isProd = process.env.NODE_ENV === "production";
+
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProd,
+    // For cross-site cookies (frontend on different domain) use 'none' in production
+    sameSite: isProd ? ("none" as const) : ("lax" as const),
     path: "/",
   };
 }
