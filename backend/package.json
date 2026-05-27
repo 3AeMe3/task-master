@@ -6,7 +6,8 @@
   "scripts": {
     "test": "tsx --test tests/**/*.test.ts",
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
+    "postinstall": "prisma generate",
     "start": "tsx dist/index.js"
   },
   "keywords": [],
