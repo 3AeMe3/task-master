@@ -80,7 +80,7 @@ export default async function Projects() {
         </div>
         <CreateProject />
       </div>
-      <div className="text-white cursor-pointer bg-linear-to-r from-indigo-400 to-indigo-500 w-full h-32 rounded-2xl grid grid-cols-3 items-center  px-5 mt-5">
+      <div className="text-white  bg-linear-to-r from-indigo-400 to-indigo-500 w-full h-32 rounded-2xl grid grid-cols-3 items-center  px-5 mt-5">
         <div>
           <p className="text-lg">Proyectos Totales</p>
           <span className="text-2xl font-semibold">{totalProjects}</span>

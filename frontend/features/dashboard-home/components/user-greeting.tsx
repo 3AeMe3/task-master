@@ -11,7 +11,7 @@ export default function UserGreeting({ user }: UserGreetingProps) {
         Buenas Tardes, {user.name}
       </h2>
       <p className="text-black/60">
-        Aqui esta un resumen de tu dia, lo estas haciendo muy bien!
+        Aqui esta un resumen del día de Hoy, lo estas haciendo muy bien!
       </p>
     </div>
   );

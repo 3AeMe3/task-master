@@ -24,7 +24,7 @@ export default async function Home() {
 
   const { todayTasks, activeCount, completedCount, overdueCount, percentage } =
     buildTaskMetrics(tasks);
-  const pendingCount = Math.max(activeCount - completedCount - overdueCount, 0);
+  // const pendingCount = Math.max(activeCount - completedCount - overdueCount, 0);
   const upcomingTasks = tasks
     .filter((task) => task.status !== "COMPLETADO")
     .sort((leftTask, rightTask) => {
@@ -62,7 +62,7 @@ export default async function Home() {
             {activeCount}
           </CardContent>
           <CardFooter className="text-black/40 font-semibold">
-            Active Task
+            Tareas Activas
           </CardFooter>
         </Card>
         <Card className="h-40 gap-0">
@@ -75,7 +75,7 @@ export default async function Home() {
             {completedCount}
           </CardContent>
           <CardFooter className="text-black/40 font-semibold">
-            Completed
+            Completado
           </CardFooter>
         </Card>
         <Card className="h-40 gap-0">
@@ -105,16 +105,11 @@ export default async function Home() {
           </CardFooter>
         </Card>
       </div>
-      <div className="flex min-h-[28rem] flex-col items-stretch gap-3 xl:flex-row">
+      <div className="flex min-h-112 flex-col items-stretch gap-3 xl:flex-row">
         {tasks && (
           <TaskClientView taskData={todayTasks} title="Tareas de Hoy" />
         )}
-        <TaskSummary
-          completedCount={completedCount}
-          overdueCount={overdueCount}
-          pendingCount={pendingCount}
-          totalCount={activeCount}
-        />
+        <TaskSummary />
       </div>
 
       <div className="rounded-2xl border bg-white p-6 shadow-sm">
@@ -131,7 +126,8 @@ export default async function Home() {
         </div>
         {upcomingTasks.length === 0 ? (
           <div className="mt-5 rounded-xl border border-dashed border-gray-300 bg-[#fafbfc] p-6 text-center text-black/50">
-            No tienes tareas pendientes por ahora. Buen momento para crear la siguiente.
+            No tienes tareas pendientes por ahora. Buen momento para crear la
+            siguiente.
           </div>
         ) : (
           <div className="mt-5 grid gap-3 md:grid-cols-2">

@@ -25,3 +25,7 @@ export function dateFormater(date?: string | null) {
 export const todayDate = () => {
   return format(startOfDay(new Date()), "MM/dd/yyyy");
 };
+
+export const grabFirstLetter = (name: string) => {
+  return name.charAt(0).toUpperCase();
+};

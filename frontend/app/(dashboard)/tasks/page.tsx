@@ -13,7 +13,7 @@ export default async function AllTasks() {
         </div>
         <CreateTask />
       </div>
-      <div className=" rounded-lg shadow p-5 flex-1">
+      <div className="mb-10">
         <TaskClientView taskData={tasks} />
       </div>
     </main>

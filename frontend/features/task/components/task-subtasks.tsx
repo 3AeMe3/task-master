@@ -8,7 +8,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { createSubTask, deleteSubTask, toggleSubTask } from "../services/task.server";
+import {
+  createSubTask,
+  deleteSubTask,
+  toggleSubTask,
+} from "../services/task.server";
 import type { Task } from "../types/task.types";
 
 type TaskSubtasksProps = {
@@ -25,7 +29,9 @@ export default function TaskSubtasks({
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [pendingSubTaskId, setPendingSubTaskId] = useState<number | null>(null);
-  const [pendingAction, setPendingAction] = useState<"toggle" | "delete" | null>(null);
+  const [pendingAction, setPendingAction] = useState<
+    "toggle" | "delete" | null
+  >(null);
   const [isCreating, startCreateTransition] = useTransition();
   const [isUpdating, startUpdateTransition] = useTransition();
 
@@ -51,13 +57,18 @@ export default function TaskSubtasks({
     const normalizedTitle = title.trim();
 
     if (!normalizedTitle) {
-      handleError(new Error("Escribe un titulo para la subtarea"), "Escribe un titulo para la subtarea");
+      handleError(
+        new Error("Escribe un titulo para la subtarea"),
+        "Escribe un titulo para la subtarea",
+      );
       return;
     }
 
     startCreateTransition(async () => {
       try {
-        const updatedTask = await createSubTask(task.id, { title: normalizedTitle });
+        const updatedTask = await createSubTask(task.id, {
+          title: normalizedTitle,
+        });
         setTitle("");
         handleTaskSync(updatedTask, "Subtarea creada");
       } catch (error) {
@@ -104,7 +115,7 @@ export default function TaskSubtasks({
     <div>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <span className="text-lg font-semibold">Subtareas</span>
+          <span className="text-md ">Sub-Tareas</span>
           <p className="text-sm text-black/50">
             {task.subTasks.length === 0
               ? "Divide la tarea en pasos pequeños para seguir el avance."
@@ -126,7 +137,11 @@ export default function TaskSubtasks({
           placeholder="Ej. Revisar copy final"
           value={title}
         />
-        <Button disabled={isCreating} onClick={handleCreateSubTask} type="button">
+        <Button
+          disabled={isCreating}
+          onClick={handleCreateSubTask}
+          type="button"
+        >
           {isCreating ? <Loader2 className="animate-spin" /> : <Plus />}
           Agregar
         </Button>
@@ -146,7 +161,7 @@ export default function TaskSubtasks({
                 key={subTask.id}
                 className="flex items-center justify-between gap-3 rounded-xl border bg-white p-3"
               >
-                <div className="flex min-w-0 items-start gap-3">
+                <div className="flex min-w-0  gap-3 items-center">
                   <Checkbox
                     checked={subTask.completed}
                     disabled={isUpdating && isPendingForSubTask}
@@ -155,13 +170,17 @@ export default function TaskSubtasks({
                   <div className="min-w-0">
                     <p
                       className={`font-medium ${
-                        subTask.completed ? "text-black/50 line-through" : "text-black"
+                        subTask.completed
+                          ? "text-black/50 line-through"
+                          : "text-black"
                       }`}
                     >
                       {subTask.title}
                     </p>
                     {subTask.description ? (
-                      <p className="mt-1 text-sm text-black/50">{subTask.description}</p>
+                      <p className="mt-1 text-sm text-black/50">
+                        {subTask.description}
+                      </p>
                     ) : null}
                   </div>
                 </div>
@@ -172,7 +191,9 @@ export default function TaskSubtasks({
                   type="button"
                   variant="ghost"
                 >
-                  {isUpdating && isPendingForSubTask && pendingAction === "delete" ? (
+                  {isUpdating &&
+                  isPendingForSubTask &&
+                  pendingAction === "delete" ? (
                     <Loader2 className="animate-spin" />
                   ) : (
                     <Trash2 />

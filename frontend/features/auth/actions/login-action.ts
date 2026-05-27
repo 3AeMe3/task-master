@@ -7,5 +7,6 @@ import { loginUser } from "../services/auth-client";
 
 export async function loginAction(data: LoginFormValues) {
   await loginUser(data);
+
   redirect("/home");
 }

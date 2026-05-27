@@ -93,7 +93,7 @@ export default function EditTaskButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="text-white cursor-pointer bg-linear-to-r from-violet-400 to-indigo-500">
+        <Button className="flex-1 text-white cursor-pointer bg-linear-to-r from-violet-400 to-indigo-500">
           <Pencil /> Edit Task
         </Button>
       </DialogTrigger>

@@ -13,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Status } from "../types/task-status.types";
 import type { Task } from "../types/task.types";
 import { getTaskByStatus } from "../utils/getTaskByStatus";
+import { Card } from "@/components/ui/card";
 
 function matchesTaskQuery(task: Task, rawQuery: string) {
   const query = rawQuery.trim().toLowerCase();
@@ -65,9 +66,9 @@ export default function TaskList({
   );
 
   return (
-    <div className=" h-full w-full">
+    <div className=" h-full w-full ">
       {title ? (
-        <div className="w-full h-full overflow-hidden">
+        <Card className="w-full h-full overflow-hidden px-3">
           <div className="flex items-center justify-between gap-3 px-2">
             <div>
               <span className="font-semibold">{title}</span>
@@ -76,7 +77,7 @@ export default function TaskList({
               </p>
             </div>
             <Link className="font-semibold" href="/tasks">
-              View All
+              Ver Todas
             </Link>
           </div>
 
@@ -111,13 +112,15 @@ export default function TaskList({
               </div>
             </ScrollArea>
           )}
-        </div>
+        </Card>
       ) : (
-        <div className="w-full ">
+        <div className="w-full px-5 ">
           <div className="mb-4 flex flex-col gap-4">
             <div className="flex items-center gap-2 text-sm text-black/50">
               <Funnel className="h-4 w-4" />
-              <span>Filtra y busca tus tareas por estado, proyecto o contenido.</span>
+              <span>
+                Filtra y busca tus tareas por estado, proyecto o contenido.
+              </span>
             </div>
             <div className="flex flex-col gap-3 rounded-xl bg-[#f9fafb] p-4 md:flex-row md:items-center md:justify-between">
               <div className="relative w-full md:max-w-md">

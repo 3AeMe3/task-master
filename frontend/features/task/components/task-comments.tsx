@@ -45,7 +45,10 @@ export default function TaskComments({
     const normalizedContent = content.trim();
 
     if (!normalizedContent) {
-      handleError(new Error("Escribe un comentario antes de enviarlo"), "Escribe un comentario antes de enviarlo");
+      handleError(
+        new Error("Escribe un comentario antes de enviarlo"),
+        "Escribe un comentario antes de enviarlo",
+      );
       return;
     }
 
@@ -82,25 +85,29 @@ export default function TaskComments({
       <div className="mb-4 flex items-center gap-2">
         <MessageSquare />
         <div>
-          <span className="text-lg font-semibold">Comentarios</span>
-          <p className="text-sm text-black/50">
-            {task.comments.length === 0
-              ? "Registra decisiones o contexto importante sobre esta tarea."
-              : `${task.comments.length} comentario${task.comments.length === 1 ? "" : "s"}`}
-          </p>
+          <span className="text-lg font-semibold">
+            Comentarios{" "}
+            <span className="bg-black/20 font-normal p-1 text-sm rounded-full">
+              {task.comments.length}
+            </span>
+          </span>
         </div>
       </div>
 
-      <div className="rounded-xl border bg-white p-4">
+      <div>
         <Textarea
           disabled={isCreating}
           onChange={(event) => setContent(event.target.value)}
-          placeholder="Escribe un comentario útil para esta tarea..."
+          placeholder="Añadir un comentario..."
           rows={3}
           value={content}
         />
         <div className="mt-3 flex justify-end">
-          <Button disabled={isCreating} onClick={handleCreateComment} type="button">
+          <Button
+            disabled={isCreating}
+            onClick={handleCreateComment}
+            type="button"
+          >
             {isCreating ? <Loader2 className="animate-spin" /> : <Send />}
             Comentar
           </Button>
@@ -114,10 +121,11 @@ export default function TaskComments({
       ) : (
         <div className="mt-4 flex flex-col gap-3">
           {task.comments.map((comment) => {
-            const isPendingDelete = isDeleting && pendingCommentId === comment.id;
+            const isPendingDelete =
+              isDeleting && pendingCommentId === comment.id;
 
             return (
-              <div key={comment.id} className="rounded-xl border bg-white p-4">
+              <div key={comment.id} className="rounded-xl border  p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-medium">{comment.author.name}</p>
@@ -132,7 +140,11 @@ export default function TaskComments({
                     type="button"
                     variant="ghost"
                   >
-                    {isPendingDelete ? <Loader2 className="animate-spin" /> : <Trash2 />}
+                    {isPendingDelete ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Trash2 />
+                    )}
                   </Button>
                 </div>
                 <p className="mt-3 text-sm text-black/70">{comment.content}</p>

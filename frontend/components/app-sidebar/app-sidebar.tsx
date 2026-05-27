@@ -1,18 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import {
-  Bell,
   CircleCheckBig,
-  CreditCard,
   EllipsisVertical,
   FolderKanban,
   Kanban,
   LayoutDashboard,
   LogOut,
+  PanelLeft,
   SquareCheckBig,
-  UserCircle,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -35,52 +34,75 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuGroup,
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
 import { Avatar } from "../ui/avatar";
 import { AvatarImage, AvatarFallback } from "../ui/avatar";
+import { getCurrentUser } from "@/features/dashboard-home/services/current-user.server";
+import { CurrentUser } from "@/features/dashboard-home/types/current-user.types";
+import { grabFirstLetter } from "@/lib/utils/formater";
 
 export default function AppSideBar() {
+  const [currentUser, SetCurrentUser] = useState<CurrentUser>();
   const pathName = usePathname();
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpen, open } = useSidebar();
+
+  useEffect(() => {
+    const getCurrentUserData = async () => {
+      try {
+        const data = await getCurrentUser();
+        SetCurrentUser(data);
+      } catch (error) {
+        console.log("Error fetching user data:", error);
+      }
+    };
+
+    getCurrentUserData();
+  }, [SetCurrentUser]);
+
+  const firstLetterName = grabFirstLetter(currentUser?.name || "user name");
+
   return (
     <Sidebar variant="inset" collapsible="icon">
+      <PanelLeft
+        className="absolute right-0 translate-x-8 top-4 bottom-3 text-black/60 hover:text-black"
+        onClick={() => setOpen(!open)}
+      />
       <SidebarHeader className="border-gray-300 border-b ">
         <div className="flex gap-3 items-center justify-center  ">
           <CircleCheckBig className=" " />
-          <span className="font-semibold text-xl">TaskMaster</span>
+          {open && <span className="font-semibold text-xl">TaskMaster</span>}
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-4 flex mt-10 ">
+      <SidebarContent className=" flex mt-10 ">
         <GroupContent>
           <Link
             href={"/home"}
-            className={`flex items-center gap-3 text-gray-600 w-full p-3 rounded-xl font-semibold ${pathName === "/home" ? " text-white bg-gradient-to-r from-violet-400 to-indigo-500 " : ""}`}
+            className={`flex items-center gap-3 text-gray-600 w-full p-3 rounded-xl font-semibold ${pathName === "/home" ? " text-white bg-linear-to-r from-violet-400 to-indigo-500 " : ""}`}
           >
             <LayoutDashboard />
-            <span>Dashboard</span>
+            {open && <span>Dashboard</span>}
           </Link>
           <Link
             href={"/tasks"}
-            className={`flex items-center gap-3 text-gray-600 w-full p-3 rounded-xl font-semibold  ${pathName === "/tasks" ? " text-white bg-gradient-to-r from-violet-400 to-indigo-500 " : ""}`}
+            className={`flex items-center gap-3 text-gray-600 w-full p-3 rounded-xl font-semibold  ${pathName === "/tasks" ? " text-white bg-linear-to-r from-violet-400 to-indigo-500 " : ""}`}
           >
             <SquareCheckBig />
-            <span>All Tasks</span>
+            {open && <span>All Tasks</span>}
           </Link>
           <Link
             href={"/board"}
-            className={`flex items-center gap-3 text-gray-600 w-full p-3 rounded-xl font-semibold ${pathName === "/board" ? " text-white bg-gradient-to-r from-violet-400 to-indigo-500 " : ""}`}
+            className={`flex items-center gap-3 text-gray-600 w-full p-3 rounded-xl font-semibold ${pathName === "/board" ? " text-white bg-linear-to-r from-violet-400 to-indigo-500 " : ""}`}
           >
             <Kanban />
-            <span>Kanban Board</span>
+            {open && <span>Kanban Board</span>}
           </Link>
           <Link
             href={"/projects"}
             className={`flex items-center gap-3 text-gray-600 w-full p-3 rounded-xl font-semibold   ${pathName === "/projects" ? " text-white bg-linear-to-r from-violet-400 to-indigo-500 " : ""}`}
           >
             <FolderKanban />
-            <span>Projects</span>
+            {open && <span>Projects</span>}
           </Link>
         </GroupContent>
       </SidebarContent>
@@ -95,12 +117,16 @@ export default function AppSideBar() {
                 >
                   <Avatar className="h-8 w-8 rounded-lg grayscale">
                     <AvatarImage src="#" alt={"Avatar user name"} />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">
+                      {firstLetterName}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">username</span>
+                    <span className="truncate font-medium">
+                      {currentUser?.name || "user name"}
+                    </span>
                     <span className="truncate text-xs text-muted-foreground">
-                      user email
+                      {currentUser?.email || "user email"}
                     </span>
                   </div>
                   <EllipsisVertical className="ml-auto size-4" />
@@ -115,32 +141,24 @@ export default function AppSideBar() {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src="#" alt={"user name"} />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                      <AvatarImage
+                        src="#"
+                        alt={`a user called ${currentUser?.name}  `}
+                      />
+                      <AvatarFallback className="rounded-lg">
+                        {firstLetterName}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">username</span>
+                      <span className="truncate font-medium">
+                        {currentUser?.name || "user name"}
+                      </span>
                       <span className="truncate text-xs text-muted-foreground">
-                        nombre del usuario o email
+                        {currentUser?.email || "user email"}
                       </span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <UserCircle />
-                    Account
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <CreditCard />
-                    Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Bell />
-                    Notifications
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logoutAction}>
                   <LogOut />

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { FieldGroup, Field, FieldError } from "@/components/ui/field";
 import { Controller, useForm } from "react-hook-form";
+
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -19,6 +20,9 @@ import {
   type LoginFormValues,
   type RegisterFormValues,
 } from "../schemas/auth-form.schema";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type RegisterFormProps = {
   title: string;
@@ -34,11 +38,12 @@ type LoginFormProps = {
 
 type FormAuthProps = RegisterFormProps | LoginFormProps;
 
-function RegisterForm({
-  title,
-  onSubmitForm,
-}: RegisterFormProps) {
-  const { control, handleSubmit } = useForm<RegisterFormValues>({
+function RegisterForm({ title, onSubmitForm }: RegisterFormProps) {
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting, isSubmitSuccessful },
+  } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
@@ -50,6 +55,9 @@ function RegisterForm({
 
   const onSubmit = handleSubmit((data) => onSubmitForm(data));
 
+  if (isSubmitSuccessful) {
+    console.log("se registro correctamente");
+  }
   return (
     <Card className=" h-full justify-center w-[40%]  px-10">
       <CardHeader>
@@ -138,16 +146,21 @@ function RegisterForm({
       </CardContent>
       <CardFooter className="flex-col gap-5">
         <Field orientation="vertical">
+          {isSubmitSuccessful && (
+            <p className="text-green-500 text-sm text-center">
+              Se Registro correctamente{" "}
+            </p>
+          )}
           <Button
             type="submit"
             form="registerForm"
             className="h-12 text-lg font-semibold"
           >
-            Sign Up
+            {isSubmitting ? "Registrando..." : "Registrarse"}
           </Button>
         </Field>
         <p>
-          Already have an account?
+          Ya tienes una cuenta?
           <Link href="/login" className="ml-2 font-semibold">
             Log In
           </Link>
@@ -157,11 +170,14 @@ function RegisterForm({
   );
 }
 
-function LoginForm({
-  title,
-  onSubmitForm,
-}: LoginFormProps) {
-  const { control, handleSubmit } = useForm<LoginFormValues>({
+function LoginForm({ title, onSubmitForm }: LoginFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { isSubmitting, errors },
+  } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -169,7 +185,19 @@ function LoginForm({
     },
   });
 
-  const onSubmit = handleSubmit((data) => onSubmitForm(data));
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      await onSubmitForm(data);
+    } catch (error) {
+      if (isRedirectError(error)) throw error;
+      setError("root", {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Credenciales incorretas. Intenta de nuevo.",
+      });
+    }
+  });
 
   return (
     <Card className=" h-full justify-center w-[40%]  px-10">
@@ -202,33 +230,52 @@ function LoginForm({
               control={control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <Input
-                    {...field}
-                    id="password"
-                    placeholder="Password"
-                    className="h-12 border-2 border-purple-800"
-                    type="password"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
+                  <div className="relative">
+                    <Input
+                      {...field}
+                      id="password"
+                      placeholder="contraseña"
+                      className="h-12 border-2 border-purple-800"
+                      type={showPassword ? "text" : "password"}
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <span
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className=" absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                    >
+                      {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                    </span>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </div>
                 </Field>
               )}
             />
           </FieldGroup>
         </form>
       </CardContent>
+      {/* //cuando el usuario ingresa credenciales incorrectos mostrar error */}
       <CardFooter className="flex-col gap-5">
         <Field orientation="vertical">
-          <Button type="submit" form="loginForm" className="h-12 text-lg font-semibold">
-            Sign In
+          {errors.root && (
+            <p className="text-red-500 text-sm text-center">
+              {errors.root.message}
+            </p>
+          )}
+
+          <Button
+            type="submit"
+            form="loginForm"
+            className="h-12 text-lg font-semibold"
+          >
+            {isSubmitting ? "Cargando..." : "Login"}
           </Button>
         </Field>
         <p>
-          Don&apos;t have an account?
+          No tienes una cuenta?
           <Link href="/register" className="ml-2 font-semibold">
-            Sign Up
+            Regístrate
           </Link>
         </p>
       </CardFooter>

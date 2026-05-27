@@ -29,8 +29,11 @@ import TaskFormFields from "./components/task-form-fields";
 export default function CreateTask() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const { data: projectData, loading: isLoadingProjects, error: projectError } =
-    useProjects();
+  const {
+    data: projectData,
+    loading: isLoadingProjects,
+    error: projectError,
+  } = useProjects();
   const { submit, error, clearError } = useCreateTask();
   const hasProjects = projectData.length > 0;
   const {
@@ -82,12 +85,13 @@ export default function CreateTask() {
           + Crear Tarea
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-sm text-black">
+      <DialogContent className="sm:max-w-sm lg:max-w-4/12 text-black">
         <form onSubmit={handleSubmit(onValidSubmit)}>
           <DialogHeader>
             <DialogTitle>Nueva Tarea</DialogTitle>
             <DialogDescription>
-              Crea una tarea clara y asígnala a un proyecto para verla en tu panel.
+              Crea una tarea clara y asígnala a un proyecto para verla en tu
+              panel.
             </DialogDescription>
           </DialogHeader>
           {projectError ? (
@@ -96,7 +100,9 @@ export default function CreateTask() {
           {error ? <p className="text-sm text-red-500">{error}</p> : null}
           {!projectError && !isLoadingProjects && !hasProjects ? (
             <div className="my-5 rounded-xl border border-dashed border-gray-300 bg-[#fafbfc] p-4">
-              <p className="font-medium text-black">Todavía no tienes proyectos.</p>
+              <p className="font-medium text-black">
+                Todavía no tienes proyectos.
+              </p>
               <p className="mt-1 text-sm text-black/60">
                 Primero crea uno para organizar tus tareas y poder asignarlas.
               </p>

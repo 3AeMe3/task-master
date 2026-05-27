@@ -16,17 +16,7 @@ export default function Navbar() {
       <nav className="hidden lg:flex p-4 z-100 w-3/4  mx-auto ">
         <div className={`w-full justify-between flex items-center`}>
           <span className="font-semibold text-xl">ANKTM</span>
-          <ul className="flex gap-10 text-lg font-medium">
-            <li>
-              <Link href={"/"}>Home</Link>
-            </li>
-            <li>
-              <a>About Us</a>
-            </li>
-            <li>
-              <a>Features</a>
-            </li>
-          </ul>
+
           <ul className="flex gap-5 text-lg font-medium">
             <li>
               <Link href={"/login"}>Login</Link>

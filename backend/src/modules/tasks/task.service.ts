@@ -47,7 +47,10 @@ async function getOwnedProjectOrThrow(userId: number, projectId: number) {
   });
 
   if (!project) {
-    throw new HttpError(404, "No se encontro el proyecto con el id proporcionado");
+    throw new HttpError(
+      404,
+      "No se encontro el proyecto con el id proporcionado",
+    );
   }
 
   return project;
@@ -66,7 +69,11 @@ async function getOwnedTaskOrThrow(userId: number, taskId: number) {
   return task;
 }
 
-async function getOwnedSubTaskOrThrow(userId: number, taskId: number, subTaskId: number) {
+async function getOwnedSubTaskOrThrow(
+  userId: number,
+  taskId: number,
+  subTaskId: number,
+) {
   const subTask = await prisma.subTask.findFirst({
     where: {
       id: subTaskId,
@@ -114,7 +121,9 @@ function parseDueDate(dueDate?: string) {
   return parse(dueDate, "yyyy-MM-dd", new Date());
 }
 
-function normalizeWritableStatus(status?: CreateTaskInput["status"] | UpdateTaskInput["status"]) {
+function normalizeWritableStatus(
+  status?: CreateTaskInput["status"] | UpdateTaskInput["status"],
+) {
   if (status === undefined) {
     return undefined;
   }
@@ -130,7 +139,9 @@ async function assignTagsToTask(
   taskId: number,
   tagNames: string[] | undefined,
 ) {
-  const normalizedTagNames = [...new Set((tagNames ?? []).map(normalizeTagName).filter(Boolean))];
+  const normalizedTagNames = [
+    ...new Set((tagNames ?? []).map(normalizeTagName).filter(Boolean)),
+  ];
 
   for (const tagName of normalizedTagNames) {
     const tag = await prisma.tag.upsert({
@@ -232,7 +243,11 @@ export async function addTaskTag(
   return getOwnedTaskOrThrow(userId, taskId);
 }
 
-export async function removeTaskTag(userId: number, taskId: number, tagId: number) {
+export async function removeTaskTag(
+  userId: number,
+  taskId: number,
+  tagId: number,
+) {
   const task = await getOwnedTaskOrThrow(userId, taskId);
   const assignedTag = task.taskTags.find((taskTag) => taskTag.tagId === tagId);
 
@@ -266,12 +281,16 @@ export async function editTask(
 
   const data: Prisma.TaskUncheckedUpdateInput = {
     ...(input.title !== undefined ? { title: input.title } : {}),
-    ...(input.description !== undefined ? { description: input.description } : {}),
+    ...(input.description !== undefined
+      ? { description: input.description }
+      : {}),
     ...(normalizedStatus !== undefined ? { status: normalizedStatus } : {}),
     ...(input.priority !== undefined ? { priority: input.priority } : {}),
     ...(input.projectId !== undefined ? { projectId: input.projectId } : {}),
     ...(input.assigneeId !== undefined ? { assigneeId: input.assigneeId } : {}),
-    ...(input.dueDate !== undefined ? { dueDate: parseDueDate(input.dueDate) } : {}),
+    ...(input.dueDate !== undefined
+      ? { dueDate: parseDueDate(input.dueDate) }
+      : {}),
   };
 
   return prisma.task.update({
@@ -299,7 +318,11 @@ export async function createSubTask(
   return getOwnedTaskOrThrow(userId, taskId);
 }
 
-export async function toggleSubTask(userId: number, taskId: number, subTaskId: number) {
+export async function toggleSubTask(
+  userId: number,
+  taskId: number,
+  subTaskId: number,
+) {
   const subTask = await getOwnedSubTaskOrThrow(userId, taskId, subTaskId);
 
   await prisma.subTask.update({
@@ -312,7 +335,11 @@ export async function toggleSubTask(userId: number, taskId: number, subTaskId: n
   return getOwnedTaskOrThrow(userId, taskId);
 }
 
-export async function deleteSubTask(userId: number, taskId: number, subTaskId: number) {
+export async function deleteSubTask(
+  userId: number,
+  taskId: number,
+  subTaskId: number,
+) {
   await getOwnedSubTaskOrThrow(userId, taskId, subTaskId);
 
   await prisma.subTask.delete({
