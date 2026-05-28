@@ -1,5 +1,5 @@
-import { prisma } from "../../lib/prisma";
-import { HttpError } from "../../shared/errors/http-error";
+import { prisma } from "../../lib/prisma.js";
+import { HttpError } from "../../shared/errors/http-error.js";
 export async function getMe(userId) {
     const user = await prisma.user.findUnique({
         where: { id: userId },

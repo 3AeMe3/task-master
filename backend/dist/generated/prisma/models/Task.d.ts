@@ -678,6 +678,7 @@ export type TaskCreateOrConnectWithoutAssigneeInput = {
 };
 export type TaskCreateManyAssigneeInputEnvelope = {
     data: Prisma.TaskCreateManyAssigneeInput | Prisma.TaskCreateManyAssigneeInput[];
+    skipDuplicates?: boolean;
 };
 export type TaskCreateWithoutCreatedByInput = {
     title: string;
@@ -714,6 +715,7 @@ export type TaskCreateOrConnectWithoutCreatedByInput = {
 };
 export type TaskCreateManyCreatedByInputEnvelope = {
     data: Prisma.TaskCreateManyCreatedByInput | Prisma.TaskCreateManyCreatedByInput[];
+    skipDuplicates?: boolean;
 };
 export type TaskUpsertWithWhereUniqueWithoutAssigneeInput = {
     where: Prisma.TaskWhereUniqueInput;
@@ -792,6 +794,7 @@ export type TaskCreateOrConnectWithoutProjectInput = {
 };
 export type TaskCreateManyProjectInputEnvelope = {
     data: Prisma.TaskCreateManyProjectInput | Prisma.TaskCreateManyProjectInput[];
+    skipDuplicates?: boolean;
 };
 export type TaskUpsertWithWhereUniqueWithoutProjectInput = {
     where: Prisma.TaskWhereUniqueInput;
@@ -1921,6 +1924,7 @@ export type TaskCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
      * The data used to create many Tasks.
      */
     data: Prisma.TaskCreateManyInput | Prisma.TaskCreateManyInput[];
+    skipDuplicates?: boolean;
 };
 /**
  * Task createManyAndReturn
@@ -1938,6 +1942,7 @@ export type TaskCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
      * The data used to create many Tasks.
      */
     data: Prisma.TaskCreateManyInput | Prisma.TaskCreateManyInput[];
+    skipDuplicates?: boolean;
     /**
      * Choose, which related nodes to fetch as well
      */

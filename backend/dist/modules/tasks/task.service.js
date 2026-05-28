@@ -1,7 +1,7 @@
 import { parse } from "date-fns";
-import { STATUS } from "../../generated/prisma/client";
-import { prisma } from "../../lib/prisma";
-import { HttpError } from "../../shared/errors/http-error";
+import { STATUS } from "../../generated/prisma/client.js";
+import { prisma } from "../../lib/prisma.js";
+import { HttpError } from "../../shared/errors/http-error.js";
 const taskDetailInclude = {
     project: true,
     taskTags: {

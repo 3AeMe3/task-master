@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { HttpError } from "../errors/http-error";
+import { HttpError } from "../errors/http-error.js";
 function getJwtSecret() {
     const secret = process.env.JWT_SECRET;
     if (!secret) {

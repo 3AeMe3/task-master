@@ -1,4 +1,4 @@
-import { HttpError } from "../errors/http-error";
+import { HttpError } from "../errors/http-error.js";
 export function requireUserId(req) {
     const userId = req.user?.userId;
     if (!userId) {

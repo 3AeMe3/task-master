@@ -398,6 +398,7 @@ export type TaskCommentCreateOrConnectWithoutAuthorInput = {
 };
 export type TaskCommentCreateManyAuthorInputEnvelope = {
     data: Prisma.TaskCommentCreateManyAuthorInput | Prisma.TaskCommentCreateManyAuthorInput[];
+    skipDuplicates?: boolean;
 };
 export type TaskCommentUpsertWithWhereUniqueWithoutAuthorInput = {
     where: Prisma.TaskCommentWhereUniqueInput;
@@ -439,6 +440,7 @@ export type TaskCommentCreateOrConnectWithoutTaskInput = {
 };
 export type TaskCommentCreateManyTaskInputEnvelope = {
     data: Prisma.TaskCommentCreateManyTaskInput | Prisma.TaskCommentCreateManyTaskInput[];
+    skipDuplicates?: boolean;
 };
 export type TaskCommentUpsertWithWhereUniqueWithoutTaskInput = {
     where: Prisma.TaskCommentWhereUniqueInput;
@@ -1144,6 +1146,7 @@ export type TaskCommentCreateManyArgs<ExtArgs extends runtime.Types.Extensions.I
      * The data used to create many TaskComments.
      */
     data: Prisma.TaskCommentCreateManyInput | Prisma.TaskCommentCreateManyInput[];
+    skipDuplicates?: boolean;
 };
 /**
  * TaskComment createManyAndReturn
@@ -1161,6 +1164,7 @@ export type TaskCommentCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
      * The data used to create many TaskComments.
      */
     data: Prisma.TaskCommentCreateManyInput | Prisma.TaskCommentCreateManyInput[];
+    skipDuplicates?: boolean;
     /**
      * Choose, which related nodes to fetch as well
      */

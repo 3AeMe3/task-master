@@ -1,4 +1,4 @@
-import { CreateProjectInput } from "./project.schemas";
+import { CreateProjectInput } from "./project.schemas.js";
 export declare function createProject(userId: number, input: CreateProjectInput): Promise<{
     id: number;
     name: string;

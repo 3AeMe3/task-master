@@ -1,5 +1,5 @@
-import { STATUS } from "../../generated/prisma/client";
-import { CreateSubTaskInput, CreateTaskCommentInput, CreateTaskTagInput, CreateTaskInput, UpdateTaskInput } from "./task.schemas";
+import { STATUS } from "../../generated/prisma/client.js";
+import { CreateSubTaskInput, CreateTaskCommentInput, CreateTaskTagInput, CreateTaskInput, UpdateTaskInput } from "./task.schemas.js";
 export declare function getTasks(userId: number): Promise<({
     comments: ({
         author: {
@@ -40,7 +40,7 @@ export declare function getTasks(userId: number): Promise<({
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -87,7 +87,7 @@ export declare function createTask(userId: number, input: CreateTaskInput): Prom
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -134,7 +134,7 @@ export declare function findTask(userId: number, taskId: number): Promise<{
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -181,7 +181,7 @@ export declare function completeTask(userId: number, taskId: number): Promise<{
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -228,7 +228,7 @@ export declare function deleteTask(userId: number, taskId: number): Promise<{
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -275,7 +275,7 @@ export declare function addTaskTag(userId: number, taskId: number, input: Create
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -322,7 +322,7 @@ export declare function removeTaskTag(userId: number, taskId: number, tagId: num
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -369,7 +369,7 @@ export declare function editTask(userId: number, taskId: number, input: UpdateTa
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -416,7 +416,7 @@ export declare function createSubTask(userId: number, taskId: number, input: Cre
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -463,7 +463,7 @@ export declare function toggleSubTask(userId: number, taskId: number, subTaskId:
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -510,7 +510,7 @@ export declare function deleteSubTask(userId: number, taskId: number, subTaskId:
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -557,7 +557,7 @@ export declare function createTaskComment(userId: number, taskId: number, input:
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;
@@ -604,7 +604,7 @@ export declare function deleteTaskComment(userId: number, taskId: number, commen
     dueDate: Date | null;
     title: string;
     description: string | null;
-    priority: import("../../generated/prisma/enums").PRIORITY;
+    priority: import("../../generated/prisma/enums.js").PRIORITY;
     createdAt: Date;
     updatedAt: Date;
     createdById: number;

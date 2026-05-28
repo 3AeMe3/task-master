@@ -1,8 +1,8 @@
-import { asyncHandler } from "../../shared/http/async-handler";
-import { sendSuccess } from "../../shared/http/api-response";
-import { requireUserId } from "../../shared/http/request";
-import { toCurrentUserDto } from "./me.dto";
-import { getMe } from "./me.service";
+import { asyncHandler } from "../../shared/http/async-handler.js";
+import { sendSuccess } from "../../shared/http/api-response.js";
+import { requireUserId } from "../../shared/http/request.js";
+import { toCurrentUserDto } from "./me.dto.js";
+import { getMe } from "./me.service.js";
 export const getMeController = asyncHandler(async (req, res) => {
     const userId = requireUserId(req);
     const user = await getMe(userId);

@@ -1,4 +1,4 @@
-import { HttpError } from "../errors/http-error";
+import { HttpError } from "../errors/http-error.js";
 export function parseWithSchema(schema, input) {
     const result = schema.safeParse(input);
     if (!result.success) {

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { verifyToken } from "../../shared/middleware/auth-middleware";
-import { addTaskTagController, completeTaskController, createTaskCommentController, createSubTaskController, createTaskController, deleteTaskCommentController, deleteSubTaskController, deleteTaskController, editTaskController, findTaskController, getTasksController, removeTaskTagController, toggleSubTaskController, } from "./task.controller";
+import { verifyToken } from "../../shared/middleware/auth-middleware.js";
+import { addTaskTagController, completeTaskController, createTaskCommentController, createSubTaskController, createTaskController, deleteTaskCommentController, deleteSubTaskController, deleteTaskController, editTaskController, findTaskController, getTasksController, removeTaskTagController, toggleSubTaskController, } from "./task.controller.js";
 const taskRouter = Router();
 taskRouter.get("/task", verifyToken, getTasksController);
 taskRouter.post("/task", verifyToken, createTaskController);

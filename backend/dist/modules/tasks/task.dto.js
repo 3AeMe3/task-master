@@ -1,5 +1,5 @@
 import { isBefore, startOfDay } from "date-fns";
-import { toProjectDto } from "../projects/project.dto";
+import { toProjectDto } from "../projects/project.dto.js";
 export function resolveTaskStatus(task) {
     if (task.status === "COMPLETADO") {
         return "COMPLETADO";

@@ -1,4 +1,4 @@
-import { ProjectDto } from "../projects/project.dto";
+import { ProjectDto } from "../projects/project.dto.js";
 type SubTaskDtoInput = {
     id: number;
     title: string;

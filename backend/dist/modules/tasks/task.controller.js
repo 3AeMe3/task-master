@@ -1,10 +1,10 @@
-import { asyncHandler } from "../../shared/http/async-handler";
-import { sendSuccess } from "../../shared/http/api-response";
-import { requireUserId } from "../../shared/http/request";
-import { parseIdParam, parseWithSchema } from "../../shared/http/validation";
-import { toTaskDto } from "./task.dto";
-import { addTaskTag, completeTask, createTaskComment, createSubTask, createTask, deleteTaskComment, removeTaskTag, deleteSubTask, deleteTask, editTask, findTask, getTasks, toggleSubTask, } from "./task.service";
-import { createSubTaskSchema, createTaskCommentSchema, createTaskTagSchema, createTaskSchema, updateTaskSchema, } from "./task.schemas";
+import { asyncHandler } from "../../shared/http/async-handler.js";
+import { sendSuccess } from "../../shared/http/api-response.js";
+import { requireUserId } from "../../shared/http/request.js";
+import { parseIdParam, parseWithSchema } from "../../shared/http/validation.js";
+import { toTaskDto } from "./task.dto.js";
+import { addTaskTag, completeTask, createTaskComment, createSubTask, createTask, deleteTaskComment, removeTaskTag, deleteSubTask, deleteTask, editTask, findTask, getTasks, toggleSubTask, } from "./task.service.js";
+import { createSubTaskSchema, createTaskCommentSchema, createTaskTagSchema, createTaskSchema, updateTaskSchema, } from "./task.schemas.js";
 export const getTasksController = asyncHandler(async (req, res) => {
     const userId = requireUserId(req);
     const tasks = await getTasks(userId);

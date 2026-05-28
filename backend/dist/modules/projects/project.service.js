@@ -1,5 +1,5 @@
-import { prisma } from "../../lib/prisma";
-import { HttpError } from "../../shared/errors/http-error";
+import { prisma } from "../../lib/prisma.js";
+import { HttpError } from "../../shared/errors/http-error.js";
 export async function createProject(userId, input) {
     const existingProject = await prisma.project.findFirst({
         where: { userId, name: input.name },

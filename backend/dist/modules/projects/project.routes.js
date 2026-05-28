@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { verifyToken } from "../../shared/middleware/auth-middleware";
-import { createProjectController, getProjectsController, } from "./project.controller";
+import { verifyToken } from "../../shared/middleware/auth-middleware.js";
+import { createProjectController, getProjectsController, } from "./project.controller.js";
 const projectRouter = Router();
 projectRouter.post("/project", verifyToken, createProjectController);
 projectRouter.get("/project", verifyToken, getProjectsController);

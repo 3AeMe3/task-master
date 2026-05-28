@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { prisma } from "../../lib/prisma";
-import { HttpError } from "../../shared/errors/http-error";
+import { prisma } from "../../lib/prisma.js";
+import { HttpError } from "../../shared/errors/http-error.js";
 const AUTH_COOKIE_NAME = "access_token";
 function getJwtSecret() {
     const secret = process.env.JWT_SECRET;

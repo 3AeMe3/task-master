@@ -1,10 +1,10 @@
-import { asyncHandler } from "../../shared/http/async-handler";
-import { sendSuccess } from "../../shared/http/api-response";
-import { requireUserId } from "../../shared/http/request";
-import { parseWithSchema } from "../../shared/http/validation";
-import { toProjectDto } from "./project.dto";
-import { createProject, getProjects } from "./project.service";
-import { createProjectSchema } from "./project.schemas";
+import { asyncHandler } from "../../shared/http/async-handler.js";
+import { sendSuccess } from "../../shared/http/api-response.js";
+import { requireUserId } from "../../shared/http/request.js";
+import { parseWithSchema } from "../../shared/http/validation.js";
+import { toProjectDto } from "./project.dto.js";
+import { createProject, getProjects } from "./project.service.js";
+import { createProjectSchema } from "./project.schemas.js";
 export const createProjectController = asyncHandler(async (req, res) => {
     const userId = requireUserId(req);
     const input = parseWithSchema(createProjectSchema, req.body);

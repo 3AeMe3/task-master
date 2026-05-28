@@ -105,6 +105,8 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
      * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
      */
     $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: {
+        maxWait?: number;
+        timeout?: number;
         isolationLevel?: Prisma.TransactionIsolationLevel;
     }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>;
     $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => runtime.Types.Utils.JsPromise<R>, options?: {

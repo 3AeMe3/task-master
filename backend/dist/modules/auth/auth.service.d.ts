@@ -1,5 +1,5 @@
 import { CookieOptions } from "express";
-import { LoginInput, RegisterInput } from "./auth.schemas";
+import { LoginInput, RegisterInput } from "./auth.schemas.js";
 export declare function getAuthCookieName(): string;
 export declare function getAuthCookieOptions(): CookieOptions;
 export declare function registerUser(input: RegisterInput): Promise<{

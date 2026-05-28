@@ -1,4 +1,4 @@
-import app from "./app";
+import app from "./app.js";
 const PORT = process.env.PORT || 4000;
 // Start only when running as a standalone server (local development)
 app.listen(PORT, async () => {
