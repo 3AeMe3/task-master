@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 enum STATUS {
@@ -32,8 +32,8 @@ model User {
 
   projects      Project[]
   taskComments  TaskComment[]
-  assignedTasks Task[]    @relation("AssignedTasks")
-  createdTasks  Task[]    @relation("CreatedTasks")
+  assignedTasks Task[]        @relation("AssignedTasks")
+  createdTasks  Task[]        @relation("CreatedTasks")
 }
 
 model Project {
@@ -54,7 +54,7 @@ model Task {
   status      STATUS    @default(PENDIENTE)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  dueDate     DateTime? 
+  dueDate     DateTime?
   createdById Int
   createdBy   User      @relation("CreatedTasks", fields: [createdById], references: [id])
 
