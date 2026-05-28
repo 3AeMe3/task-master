@@ -16,10 +16,11 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser()); //siempre colocarlo antes de cors no despues
 
 // CORS: allow FRONTEND_URL (set in env) or default localhost for dev
-const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000").split(",");
+const allowedOrigins = (
+  process.env.FRONTEND_URL || "http://localhost:3000"
+).split(",");
 const corsOptions = {
   origin: (origin: string | undefined, cb: any) => {
     // allow server-to-server or same-origin requests (no origin)
@@ -33,6 +34,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(cookieParser()); //siempre colocarlo antes de cors no despues
 
 app.use(meRoutes);
 app.use(taskroutes);
