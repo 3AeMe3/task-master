@@ -1,0 +1,1 @@
+{"version":3,"file":"project.dto.js","sourceRoot":"","sources":["../../../src/modules/projects/project.dto.ts"],"names":[],"mappings":"AAaA,MAAM,UAAU,YAAY,CAAC,OAAwB;IACnD,OAAO;QACL,EAAE,EAAE,OAAO,CAAC,EAAE;QACd,IAAI,EAAE,OAAO,CAAC,IAAI;QAClB,MAAM,EAAE,OAAO,CAAC,MAAM;QACtB,WAAW,EAAE,IAAI;KAClB,CAAC;AACJ,CAAC"}
