@@ -1,3 +1,4 @@
+"use server";
 import { cookies } from "next/headers";
 import { API_BASE_URL } from "@/lib/http/api-config";
 import { readApiResponse } from "@/lib/http/api-response";
