@@ -1,24 +1,24 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import CreateTask from "@/features/task/create-task";
-import { getTasks } from "@/features/task/services/task.server";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { Calendar } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import CreateTask from '@/features/task/create-task';
+import { getTasks } from '@/features/task/services/task.server';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { Calendar } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
 const columns = [
   {
-    id: "PENDIENTE",
-    title: "Pendientes",
-    emptyLabel: "No hay tareas pendientes.",
+    id: 'PENDIENTE',
+    title: 'Pendientes',
+    emptyLabel: 'No hay tareas pendientes.',
   },
   {
-    id: "COMPLETADO",
-    title: "Completadas",
-    emptyLabel: "No hay tareas completadas.",
+    id: 'COMPLETADO',
+    title: 'Completadas',
+    emptyLabel: 'No hay tareas completadas.',
   },
-  { id: "VENCIDO", title: "Vencidas", emptyLabel: "No hay tareas vencidas." },
+  { id: 'VENCIDO', title: 'Vencidas', emptyLabel: 'No hay tareas vencidas.' },
 ] as const;
 
 export default async function KabanBoard() {
@@ -40,7 +40,7 @@ export default async function KabanBoard() {
           const columnTasks = tasks.filter((task) => task.status === column.id);
 
           return (
-            <section key={column.id}>
+            <section key={column.id} className="w-full">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-black">
                   {column.title}
@@ -50,7 +50,7 @@ export default async function KabanBoard() {
                 </span>
               </div>
 
-              <div className="flex min-h-80 flex-col gap-4 ">
+              <div className="flex min-h-80 flex-col gap-4">
                 {columnTasks.length === 0 ? (
                   <div className="flex items-center justify-center rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-black/50">
                     {column.emptyLabel}
@@ -58,30 +58,30 @@ export default async function KabanBoard() {
                 ) : (
                   columnTasks.map((task) => {
                     return (
-                      <Card className=" gap-0" key={task.id}>
+                      <Card className="gap-0" key={task.id}>
                         <CardHeader className="pb-3">
                           <CardTitle className="text-base">
                             {task.title}
                           </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3 text-sm text-black/60 flex  flex-col gap-2">
-                          <div className="flex  gap-3">
+                        <CardContent className="flex flex-col gap-2 space-y-3 text-sm text-black/60">
+                          <div className="flex flex-wrap gap-3">
                             {task.tags.map((tag) => (
-                              <Badge variant={"secondary"} key={tag.id}>
+                              <Badge variant={'secondary'} key={tag.id}>
                                 {tag.name}
                               </Badge>
                             ))}
                           </div>
                           <Progress value={52} />
                           <div className="flex items-center justify-between">
-                            <span>{task.project?.name ?? "Sin proyecto"}</span>
+                            <span>{task.project?.name ?? 'Sin proyecto'}</span>
                             <span className="flex items-center gap-1">
                               <Calendar size={15} />
                               {task.dueDate
-                                ? format(task.dueDate, "dd MMM ", {
+                                ? format(task.dueDate, 'dd MMM ', {
                                     locale: es,
                                   })
-                                : "Sin fecha"}
+                                : 'Sin fecha'}
                             </span>
                           </div>
                         </CardContent>
