@@ -1,36 +1,34 @@
-"use client";
-import { useState } from "react";
-
-import CardGlass from "@/components/card-glass";
-import FeatureOption from "../components/feature-option";
-import { featureData } from "../feature-data";
-
+import {
+  Authentication,
+  Comments,
+  ProgressFeat,
+  SubTask,
+  Tags,
+} from '../components/features-cards';
 export default function Features() {
-  const [indexFeat, setIndexFeat] = useState(0);
-  const currentFeature = featureData[indexFeat];
-
   return (
-    <div className="h-screen flex justify-center items-center">
-      <div className="w-3/4 h-3/4  shadow-lg overflow-hidden lg:flex lg:flex-row">
-        <div className="flex overlflow-x-auto  overflow-y-hidden h-16   text-center lg:flex-col lg:h-full lg:w-3/12 relative">
-          {featureData.map((feature, idx) => (
-            <FeatureOption
-              key={idx}
-              title={feature.title}
-              handleClick={() => setIndexFeat(idx)}
-              className={`relative ${indexFeat === idx ? "after:content-[''] after:h-48.25 after:w-2 after:bg-indigo-800 after:absolute after:left-0 after:top-0 after:bottom-0 " : "bg-transparent"} `}
-            />
-          ))}
-        </div>
-        <div className=" h-full w-full">
-          {currentFeature && (
-            <CardGlass
-              title={currentFeature.title}
-              description={currentFeature.description}
-            />
-          )}
-        </div>
+    <section className="my-10 flex flex-col justify-center gap-3 text-left">
+      <span data-aos="fade-right" className="font-semibold text-violet-600">
+        FEATURES
+      </span>
+      <h2
+        data-aos="fade-right"
+        data-aos-delay="200"
+        className="text-4xl font-bold"
+      >
+        TODO LO QUE NECESITAS
+      </h2>
+      <p data-aos="fade-right" data-aos-delay="250">
+        Desde sprint planning hasta tareas diarias - AnkTask se adapta a ti.
+      </p>
+
+      <div className="my-5 grid grid-cols-1 items-center justify-center gap-4 lg:grid-cols-2 2xl:grid-cols-12 2xl:grid-rows-2">
+        <Authentication />
+        <Tags />
+        <Comments />
+        <ProgressFeat />
+        <SubTask />
       </div>
-    </div>
+    </section>
   );
 }

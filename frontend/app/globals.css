@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -48,6 +48,12 @@
 
   --animate-fade-in: fade-in 0.5s ease-in-out;
   --animate-fade-out: fade-out 0.5s ease-in-out;
+
+  --breakpoint-sm: 20rem;
+  --breakpoint-md: 30rem;
+  --breakpoint-lg: 48rem;
+  --breakpoint-xl: 64rem;
+  --breakpoint-2xl: 80rem;
 }
 
 :root {
@@ -126,6 +132,13 @@
   body {
     @apply bg-background text-foreground;
   }
+  section {
+    @apply mx-auto min-h-[120vh] px-6 lg:w-3/4 xl:w-3/5;
+  }
+
+  p {
+    @apply text-gray-300/60;
+  }
 }
 body {
   font-family: var(--font-body);
@@ -146,7 +159,7 @@ h6 {
   box-shadow: inset 1px 1px 5px;
 }
 .btn-primary:after {
-  content: "";
+  content: '';
   position: absolute;
   height: 1rem;
   background-color: white;
@@ -164,7 +177,7 @@ h6 {
   z-index: -1000;
 }
 .bg-main:after {
-  content: "";
+  content: '';
   position: absolute;
   left: 50%;
   top: 0;
