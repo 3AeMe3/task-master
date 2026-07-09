@@ -290,7 +290,8 @@ function LoginForm({ title, onSubmitForm }: LoginFormProps) {
         <Field orientation="vertical">
           {errors.root && (
             <p className="text-center text-sm text-red-500">
-              {errors.root.message}
+              {errors.root.message ||
+                'Hubo un error en el servidor. Intenta de nuevo o vuelve mas tarde.'}
             </p>
           )}
 
