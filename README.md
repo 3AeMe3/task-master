@@ -39,7 +39,7 @@ The project is structured as a **monorepo** with a clear separation between fron
  
 | Landing Page | Dashboard | Task Detail |
 |---|---|---|
-| [`screenshot here`](https://imgur.com/5nQNJqj) | [`screenshot here`](https://i.imgur.com/C5DTPNP.png) | [`screenshot here` ](https://i.imgur.com/cUYsj2y.png)|
+| https://i.imgur.com/5nQNJqj.png | https://i.imgur.com/C5DTPNP.png | https://i.imgur.com/cUYsj2y.png|
  
 ---
  
